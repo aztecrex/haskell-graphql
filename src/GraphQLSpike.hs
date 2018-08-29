@@ -15,9 +15,12 @@ import Data.Time
 
 import Debug.Trace
 
-schema1 :: Alternative f => Schema f
-schema1 = hello :| []
+-- schema1 :: Alternative f => Schema f
+-- schema1 = hello :| []
 
-hello :: Alternative f => Resolver f
-hello = Schema.scalar "hello" ("it's me" :: Text)
+-- hello :: Alternative f => Resolver f
+-- hello = Schema.scalar "hello" ("it's me" :: Text)
 
+-- these are from tutorial but they don't compile ^^^^^^
+
+-- moving on to creating a DSL. we'll see
