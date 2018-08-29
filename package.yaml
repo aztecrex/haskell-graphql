@@ -15,6 +15,7 @@ description: See README.md on GitHub at <https://github.com/aztecrex/haskell-gra
 dependencies:
 - base >= 4.7 && < 5
 - aeson
+- attoparsec
 - bytestring
 - graphql
 - text
@@ -44,3 +45,31 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - haskell-graphql
+
+default-extensions:
+  - ConstraintKinds
+  - DataKinds
+  - DefaultSignatures
+  - DeriveAnyClass
+  - DeriveFunctor
+  - DeriveGeneric
+  - ExistentialQuantification
+  - FlexibleContexts
+  - FlexibleInstances
+  - FunctionalDependencies
+  - GADTs
+  - MonoLocalBinds
+  - GeneralizedNewtypeDeriving
+  - KindSignatures
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NamedFieldPuns
+  - OverloadedStrings
+  - RankNTypes
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TupleSections
+  - TypeApplications
+  - TypeOperators
+  - TypeFamilies
+
