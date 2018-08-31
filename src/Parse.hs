@@ -2,10 +2,11 @@ module Parse where
 
 import Control.Monad (when)
 import Data.Attoparsec.Text
-import Data.Char (isSpace)
+import Data.Char (isSpace, isDigit)
 import Data.Int (Int32)
 import Data.List.NonEmpty
-import Data.Text (Text)
+import Data.Monoid ((<>))
+import Data.Text (Text, append)
 
 -----------------------
 -- AST - this is straight out of the spec
@@ -197,15 +198,55 @@ data Type where
 -----------------------
 -- parse
 
--- document :: Parser Document
--- document = ignored *> (Document <$> ( many1 (token definition) "done")) <* ignored
 
--- definition :: Parser Definition
--- definition =
+-- goal
+input :: Text
+input = "{ amount }"
 
-    -- definition :: Parser Text
-    -- definition = "definition"
+output :: Document
+output = Document $
+            (ExecutableDefinition
+                (OpDefExecutableDefinition (
+                    SelSetOperationDefinition
+                        (SelectionSet [
+                            Field Nothing "amount" Nothing Nothing Nothing
+                        ])
+                    )
+                )
+            )
+            :| []
 
+
+document :: Parser Document
+document = Document <$> (ignored *> token "{" *> token definitions <* "}")
+
+definitions :: Parser (NonEmpty Definition)
+definitions = (:|) <$> definition <*> pure []
+
+definition :: Parser Definition
+definition = ExecutableDefinition <$> executableDefinition
+
+executableDefinition :: Parser ExecDef
+executableDefinition = OpDefExecutableDefinition <$> opDef
+
+opDef :: Parser OpDef
+opDef = SelSetOperationDefinition <$> selSetOpDef
+
+selSetOpDef :: Parser SelectionSet
+selSetOpDef = SelectionSet <$> selections
+
+selections :: Parser [Selection]
+selections = (:) <$> selection <*> pure []
+
+selection :: Parser Selection
+selection = Field <$> pure Nothing <*> token name <*> pure Nothing <*> pure Nothing <*> pure Nothing
+
+name :: Parser Text
+name = token $ append <$> takeWhile1 isA_z
+                    <*> Data.Attoparsec.Text.takeWhile ((||) <$> isDigit <*> isA_z)
+  where
+    -- `isAlpha` handles many more Unicode Chars
+    isA_z =  inClass $ '_' : ['A'..'Z'] <> ['a'..'z']
 
 
 token :: Parser a -> Parser a
