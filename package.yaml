@@ -8,7 +8,6 @@ copyright:           "2018 Greg Wiley"
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
 description: See README.md on GitHub at <https://github.com/aztecrex/haskell-graphql#readme>
 

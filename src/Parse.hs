@@ -1,5 +1,6 @@
 module Parse where
 
+import Control.Applicative ((<|>))
 import Control.Monad (when)
 import Data.Attoparsec.Text
 import Data.Char (isSpace, isDigit)
@@ -199,9 +200,13 @@ data Type where
 -- parse
 
 
--- goal
-input :: Text
-input = "{ amount }"
+-- goals
+input1 :: Text
+input1 = "{ amount }"
+
+input2 :: Text
+input2 = "query myQuery { amount }"
+
 
 output :: Document
 output = Document $
@@ -218,7 +223,7 @@ output = Document $
 
 
 document :: Parser Document
-document = Document <$> (ignored *> token "{" *> token definitions <* "}")
+document = Document <$> (ignored *>token definitions)
 
 definitions :: Parser (NonEmpty Definition)
 definitions = (:|) <$> definition <*> pure []
@@ -229,11 +234,21 @@ definition = ExecutableDefinition <$> executableDefinition
 executableDefinition :: Parser ExecDef
 executableDefinition = OpDefExecutableDefinition <$> opDef
 
+-- SelSetOperationDefinition :: SelectionSet -> OpDef
+-- OpTypeOperationDefinition :: OperationType -> Maybe Text -> Maybe VariableDefinitions -> Maybe Directives -> SelectionSet -> OpDef
+
+
+
 opDef :: Parser OpDef
-opDef = SelSetOperationDefinition <$> selSetOpDef
+opDef =
+            SelSetOperationDefinition <$> selSetOpDef
+        <|> OpTypeOperationDefinition <$> token opType <*> token (option Nothing (Just <$> name) ) <*> pure Nothing <*> pure Nothing <*> selSetOpDef
+
+opType :: Parser OperationType
+opType = QUERY <$ "query" <|> MUTATION <$ "mutation" <|> SUBSCRIPTION <$ "subscription"
 
 selSetOpDef :: Parser SelectionSet
-selSetOpDef = SelectionSet <$> selections
+selSetOpDef = SelectionSet <$> (token "{" *> token selections <* token "}")
 
 selections :: Parser [Selection]
 selections = (:) <$> selection <*> pure []
@@ -245,7 +260,6 @@ name :: Parser Text
 name = token $ append <$> takeWhile1 isA_z
                     <*> Data.Attoparsec.Text.takeWhile ((||) <$> isDigit <*> isA_z)
   where
-    -- `isAlpha` handles many more Unicode Chars
     isA_z =  inClass $ '_' : ['A'..'Z'] <> ['a'..'z']
 
 
@@ -254,11 +268,13 @@ token t = t <* ignored
 
 
 ignored :: Parser ()
-ignored = do
-    c <- peekChar'
-    if (isSpace c || c == ',') -- this should be OK, spec has weird def of newline
-        then anyChar *> ignored
-        else when (c == '#') $ manyTill anyChar endOfLine *> ignored
+ignored =
+    endOfInput <|>
+    do
+        c <- peekChar'
+        if (isSpace c || c == ',') -- this should be OK, spec has weird def of newline
+            then anyChar *> ignored
+            else when (c == '#') $ manyTill anyChar endOfLine *> ignored
 
 
 x :: Text
