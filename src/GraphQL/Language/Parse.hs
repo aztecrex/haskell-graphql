@@ -4,8 +4,7 @@ import Control.Applicative ((<|>), many)
 import Control.Monad (when)
 import Data.Attoparsec.Text
 import Data.Char (isSpace, isDigit)
-import Data.Int (Int32)
-import Data.List.NonEmpty
+import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
 import Data.Text (Text, append)
 import GraphQL.Language.Syntax

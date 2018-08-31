@@ -2,7 +2,7 @@ module GraphQL.Language.Syntax where
 
 --
 import Data.Int (Int32)
-import Data.List.NonEmpty (NonEmpty ((:|)))
+import Data.List.NonEmpty (NonEmpty)
 import Data.Text (Text)
 
 data Document where

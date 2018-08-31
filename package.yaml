@@ -21,19 +21,11 @@ dependencies:
 - text
 - time
 
+ghc-options:
+  - -Wall
+
 library:
   source-dirs: src
-
-executables:
-  haskell-graphql-exe:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - haskell-graphql
 
 tests:
   haskell-graphql-test:
