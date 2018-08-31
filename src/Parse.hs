@@ -15,22 +15,97 @@ data Document where
     deriving (Show, Eq)
 
 data Definition where
-    ExecutableDefinition :: ExecutableDefinition -> Definition
-    TypeSystemDefinition :: Definition
-    TypeSystemExtension :: Definition
+    ExecutableDefinition :: ExecDef -> Definition
+    TypeSystemDefinition :: TypeSysDef -> Definition
+    TypeSystemExtension :: TypeSysExt -> Definition
     deriving (Show, Eq)
 
 data TypeSysDef where
-
-
-data ExecutableDefinition where
-    OpDefExecutableDefinition :: OperationDefinition -> ExecutableDefinition
-    FragmentDefinition :: FragmentName -> TypeCondition -> Maybe Directives -> ExecutableDefinition
+    SchemaDefinition :: Maybe Directives -> NonEmpty RootOperationTypeDefinition -> TypeSysDef
+    TypeDefinition :: TypeSysDef
+    DirectiveDefinition :: TypeSysDef
     deriving (Show, Eq)
 
-data OperationDefinition where
-    SelSetOperationDefinition :: SelectionSet -> OperationDefinition
-    OpTypeOperationDefinition :: OperationType -> Maybe Text -> Maybe VariableDefinitions -> Maybe Directives -> SelectionSet -> OperationDefinition
+data TypeDef where
+    ScalarTypeDefinition :: Maybe Text -> Text -> Maybe Directives -> TypeDef
+    ObjectTypeDefinition :: Text -> Maybe ImplemntsIfcs -> Maybe Directives -> Maybe FieldsDef -> TypeDef
+    InterfaceTypeDefinition :: Maybe Text -> Text -> Maybe Directives -> Maybe FieldsDef -> TypeDef
+    UnionTypeDefinition :: Maybe Text -> Text -> Maybe Directives -> Maybe UnionMemTypes -> TypeDef
+    EnumTypeDefinition :: Maybe Text -> Text -> Maybe Directives -> Maybe EnumValsDef -> TypeDef
+    InputObjectTypeDefinition :: Maybe Text -> Text -> Maybe Directives -> Maybe InputFieldsDefinition -> TypeDef
+    deriving (Show, Eq)
+
+data InputFieldsDefinition where
+    InputFieldsDefinition :: NonEmpty InputValueDefinition  -> InputFieldsDefinition
+    deriving (Show, Eq)
+
+data EnumValsDef where
+    EnumValuesDefinition :: NonEmpty EnumValDef -> EnumValsDef
+    deriving (Show, Eq)
+
+data EnumValDef where
+    EnumValueDef :: Maybe Text -> Text -> Maybe Directives -> EnumValDef
+    deriving (Show, Eq)
+
+
+
+data ImplemntsIfcs where
+    ImplementsInterfaces :: NonEmpty Text -> ImplemntsIfcs
+    deriving (Show, Eq)
+
+data FieldsDef where
+    FieldsDefinition :: NonEmpty FieldDef -> FieldsDef
+    deriving (Show, Eq)
+
+data FieldDef where
+    FieldDefinition :: Maybe Text -> Text -> Maybe ArgsDef -> Type -> Maybe Directives -> FieldDef
+    deriving (Show, Eq)
+
+data UnionMemTypes where
+    UnionMemberTypes :: NonEmpty Text -> UnionMemTypes
+    deriving (Show, Eq)
+
+data ArgsDef where
+    ArgumentsDefinition :: NonEmpty InputValueDefinition -> ArgsDef
+    deriving (Show, Eq)
+
+data InputValueDefinition where
+    InputValueDefinition :: Maybe Text -> Text -> Type -> Maybe DefaultValue -> Maybe Directives -> InputValueDefinition
+    deriving (Show, Eq)
+
+
+
+data RootOperationTypeDefinition where
+    RootOperationTypeDefinition :: Text -> OperationType -> RootOperationTypeDefinition
+    deriving (Show, Eq)
+
+
+data TypeSysExt where
+    SchemaExtension :: Maybe Directives -> [OperationTypeDefinition] -> TypeSysExt
+    TypeExtension :: TypeExt -> TypeSysExt
+    deriving (Show, Eq)
+
+data OperationTypeDefinition where
+    OperationTypeDefinition :: OperationType -> Text -> OperationTypeDefinition
+    deriving (Show, Eq)
+
+data TypeExt where
+    ScalarTypeExtension :: Text -> Maybe Directives -> TypeExt
+    ObjectTypeExtension :: Text -> Maybe ImplemntsIfcs -> Maybe Directives -> Maybe FieldsDef -> TypeExt
+    InterfaceTypeExtension :: Text -> Maybe Directives -> Maybe FieldsDef -> TypeExt
+    UnionTypeExtension :: Text -> Maybe Directives -> Maybe UnionMemTypes -> TypeExt
+    EnumTypeExtension :: Text -> Maybe Directives -> EnumValsDef -> TypeExt
+    InputObjectTypeExtension :: Text -> Maybe Directives -> InputFieldsDefinition -> TypeExt
+    deriving (Show, Eq)
+
+data ExecDef where
+    OpDefExecutableDefinition :: OpDef -> ExecDef
+    FragmentDefinition :: FragmentName -> TypeCondition -> Maybe Directives -> ExecDef
+    deriving (Show, Eq)
+
+data OpDef where
+    SelSetOperationDefinition :: SelectionSet -> OpDef
+    OpTypeOperationDefinition :: OperationType -> Maybe Text -> Maybe VariableDefinitions -> Maybe Directives -> SelectionSet -> OpDef
     deriving (Show, Eq)
 
 data OperationType where
@@ -56,7 +131,7 @@ data DefaultValue where
     deriving (Show, Eq)
 
 data Directives where
-    Directives :: [Directive] -> Directives
+    Directives :: NonEmpty Directive -> Directives
     deriving (Show, Eq)
 
 data Directive where
@@ -112,9 +187,9 @@ data Value where
 
 data Type where
     NamedType :: Text -> Type
-    ListType :: [Type] -> Type
+    ListType :: Type -> Type
     NonNullNamedType :: Text -> Type
-    NonNullListType :: [Type] -> Type
+    NonNullListType :: Type -> Type
     deriving (Show, Eq)
 
 
