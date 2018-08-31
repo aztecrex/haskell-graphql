@@ -92,9 +92,3 @@ ignored =
             else when (c == '#') $ manyTill anyChar endOfLine *> ignored
 
 
-x :: Text
-x = ""
-
-p :: Parser Char
-p = ignored *> anyChar
-
