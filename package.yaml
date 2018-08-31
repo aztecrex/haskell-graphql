@@ -18,6 +18,7 @@ dependencies:
 - attoparsec
 - bytestring
 - graphql
+- scientific
 - text
 - time
 
