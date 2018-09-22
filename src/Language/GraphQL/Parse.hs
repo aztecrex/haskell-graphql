@@ -9,23 +9,6 @@ import Data.Monoid ((<>))
 import Data.Text (Text, append)
 import Language.GraphQL.Syntax
 
-
-
--- goals
--- input1 :: Text
--- input1 = "{ amount }"
-
--- input2 :: Text
--- input2 = "query myQuery { amount }"
-
-
--- input3 :: Text
--- input3 = "query { amount currency }"
-
--- input4 :: Text
--- input4 = "{ amount currency,posting_date }"
-
-
 output :: Document
 output = Document $
             (ExecutableDefinition
@@ -38,7 +21,6 @@ output = Document $
                 )
             )
             :| []
-
 
 document :: Parser Document
 document = Document <$> (ignored *>token definitions)
