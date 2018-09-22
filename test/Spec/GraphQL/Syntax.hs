@@ -12,16 +12,16 @@ import Language.GraphQL.Syntax
 
 tests :: TestTree
 tests = testGroup ("Syntax") [
-    testCase "simple" $ do
+    testCase "full query syntax" $ do
         let
         -- when
-            parsed = [graphql|{ amount posted }|]
+            parsed = [graphql|query TestQ { amount posted }|]
 
         -- then
             expected = Document $
                 (ExecutableDefinition
-                    (OpDefExecutableDefinition (
-                        SelSetOperationDefinition
+                    (OpDefExecutableDefinition
+                        (OpTypeOperationDefinition QUERY (Just "TestQ") Nothing Nothing
                             (SelectionSet [
                                 Field Nothing "amount" Nothing Nothing Nothing,
                                 Field Nothing "posted" Nothing Nothing Nothing
@@ -30,6 +30,46 @@ tests = testGroup ("Syntax") [
                     )
                 ) :| []
         parsed @?= expected,
+
+    testCase "unnamed query syntax" $ do
+        let
+        -- when
+            parsed = [graphql|query { amount posted }|]
+
+        -- then
+            expected = Document $
+                (ExecutableDefinition
+                    (OpDefExecutableDefinition
+                        (OpTypeOperationDefinition QUERY Nothing Nothing Nothing
+                            (SelectionSet [
+                                Field Nothing "amount" Nothing Nothing Nothing,
+                                Field Nothing "posted" Nothing Nothing Nothing
+                            ])
+                        )
+                    )
+                ) :| []
+        parsed @?= expected,
+
+    testCase "shorthand query syntax" $ do
+        let
+        -- when
+            parsed = [graphql|{ amount posted }|]
+
+        -- then
+            expected = Document $
+                (ExecutableDefinition
+                    (OpDefExecutableDefinition
+                        (SelSetOperationDefinition
+                            (SelectionSet [
+                                Field Nothing "amount" Nothing Nothing Nothing,
+                                Field Nothing "posted" Nothing Nothing Nothing
+                            ])
+                        )
+                    )
+                ) :| []
+        parsed @?= expected,
+
+
     testCase "ignore commas" $
             [graphql|{amount posted customer}|] @?= [graphql|{amount, posted customer}|]
     ]
