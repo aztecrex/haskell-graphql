@@ -18,6 +18,11 @@ data Definition where
     TypeSystemExtension :: TypeSysExt -> Definition
     deriving (Show, Eq, Generic, Data)
 
+data ExecDef where
+    OpDefExecutableDefinition :: OpDef -> ExecDef
+    FragmentDefinition :: FragmentName -> TypeCondition -> Maybe Directives -> ExecDef
+    deriving (Show, Eq, Generic, Data)
+
 data TypeSysDef where
     SchemaDefinition :: Maybe Directives -> NonEmpty RootOperationTypeDefinition -> TypeSysDef
     TypeDefinition :: TypeSysDef
@@ -94,11 +99,6 @@ data TypeExt where
     UnionTypeExtension :: Text -> Maybe Directives -> Maybe UnionMemTypes -> TypeExt
     EnumTypeExtension :: Text -> Maybe Directives -> EnumValsDef -> TypeExt
     InputObjectTypeExtension :: Text -> Maybe Directives -> InputFieldsDefinition -> TypeExt
-    deriving (Show, Eq, Generic, Data)
-
-data ExecDef where
-    OpDefExecutableDefinition :: OpDef -> ExecDef
-    FragmentDefinition :: FragmentName -> TypeCondition -> Maybe Directives -> ExecDef
     deriving (Show, Eq, Generic, Data)
 
 data OpDef where
