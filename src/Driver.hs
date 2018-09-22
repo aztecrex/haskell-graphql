@@ -4,8 +4,8 @@ import Data.Attoparsec.Text
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import qualified Data.HashMap.Strict as M
 import Data.Text
-import GraphQL.Language.Parse
-import GraphQL.Language.Syntax
+import Language.GraphQL.Parse
+import Language.GraphQL.Syntax
 import GraphQL.Resolve
 
 

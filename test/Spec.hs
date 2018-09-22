@@ -1,2 +1,13 @@
+{-# LANGUAGE TemplateHaskell  #-}
+{-# LANGUAGE QuasiQuotes  #-}
+
+import Test.Tasty (TestTree, testGroup, defaultMain)
+import qualified Spec.GraphQL as GraphQL (tests)
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = defaultMain tests
+
+tests :: TestTree
+tests = testGroup "all" [
+    GraphQL.tests
+    ]

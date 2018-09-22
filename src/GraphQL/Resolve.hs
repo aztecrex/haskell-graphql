@@ -1,7 +1,7 @@
 module GraphQL.Resolve where
 --
 import Data.Text (Text)
-import GraphQL.Language.Syntax
+import Language.GraphQL.Syntax
 
 import qualified Data.HashMap.Strict as M
 

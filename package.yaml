@@ -12,13 +12,11 @@ extra-source-files:
 description: See README.md on GitHub at <https://github.com/aztecrex/haskell-graphql#readme>
 
 dependencies:
-- base >= 4.7 && < 5
-# - aeson
-- attoparsec
-# - bytestring
-- text
-- unordered-containers
-# - time
+  - base >= 4.7 && < 5
+  - attoparsec
+  - template-haskell
+  - text
+  - unordered-containers
 
 ghc-options:
   - -Wall
@@ -36,6 +34,8 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - haskell-graphql
+    - tasty
+    - tasty-hunit
 
 default-extensions:
   - ConstraintKinds

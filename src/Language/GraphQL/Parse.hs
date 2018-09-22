@@ -1,4 +1,4 @@
-module GraphQL.Language.Parse where
+module Language.GraphQL.Parse (document) where
 
 import Control.Applicative ((<|>), many)
 import Control.Monad (when)
@@ -7,26 +7,23 @@ import Data.Char (isSpace, isDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
 import Data.Text (Text, append)
-import GraphQL.Language.Syntax
+import Language.GraphQL.Syntax
 
-
------------------------
--- parse
 
 
 -- goals
-input1 :: Text
-input1 = "{ amount }"
+-- input1 :: Text
+-- input1 = "{ amount }"
 
-input2 :: Text
-input2 = "query myQuery { amount }"
+-- input2 :: Text
+-- input2 = "query myQuery { amount }"
 
 
-input3 :: Text
-input3 = "query { amount currency }"
+-- input3 :: Text
+-- input3 = "query { amount currency }"
 
-input4 :: Text
-input4 = "{ amount currency,posting_date }"
+-- input4 :: Text
+-- input4 = "{ amount currency,posting_date }"
 
 
 output :: Document
