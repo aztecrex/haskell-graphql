@@ -15,7 +15,7 @@ tests = testGroup ("Syntax") [
     testCase "simple" $ do
         let
         -- when
-            parsed = [graphql|{ amount }|]
+            parsed = [graphql|{ amount posted }|]
 
         -- then
             expected = Document $
@@ -23,11 +23,14 @@ tests = testGroup ("Syntax") [
                     (OpDefExecutableDefinition (
                         SelSetOperationDefinition
                             (SelectionSet [
-                                Field Nothing "amount" Nothing Nothing Nothing
+                                Field Nothing "amount" Nothing Nothing Nothing,
+                                Field Nothing "posted" Nothing Nothing Nothing
                             ])
                         )
                     )
                 ) :| []
-        parsed @?= expected
+        parsed @?= expected,
+    testCase "ignore commas" $
+            [graphql|{amount posted customer}|] @?= [graphql|{amount, posted customer}|]
     ]
 
