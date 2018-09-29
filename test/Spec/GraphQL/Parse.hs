@@ -61,7 +61,9 @@ tests = testGroup "Parse" [
             testLiteral "bool - true" "true" (VBool True),
             testLiteral "bool - false" "false" (VBool False),
             testLiteral "null" "null" VNull,
-            testLiteral "enum" "CLOSED" (VEnum "CLOSED")
+            testLiteral "enum" "CLOSED" (VEnum "CLOSED"),
+            testLiteral "list" "[7 1.3 \"seven\"]" (VList [VInt 7, VFloat 1.3, VString "seven"]),
+            testLiteral "empty list" "[]" (VList [])
             ]
     ]
 

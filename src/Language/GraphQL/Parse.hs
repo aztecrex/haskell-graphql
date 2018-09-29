@@ -67,6 +67,7 @@ value =
         <|> VBool <$ token "false" <*> pure False
         <|> VNull <$ token "null"
         <|> VEnum <$> name
+        <|> VList <$> (token "[" *> many (token value) <* token "]")
     where
         number = do
             parsed <- scientific
