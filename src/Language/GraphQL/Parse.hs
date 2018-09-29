@@ -9,65 +9,53 @@ import Data.Monoid ((<>))
 import Data.Text (Text, append)
 import Language.GraphQL.Syntax
 
-output :: Document
-output = Document $
-            (ExecutableDefinition
-                (OpDefExecutableDefinition (
-                    SelSetOperationDefinition
-                        (SelectionSet [
-                            Field Nothing "amount" Nothing Nothing Nothing
-                        ])
-                    )
-                )
-            )
-            :| []
+document :: Parser DocumentNode
+-- document = (ignored *>token definitions)
+document = definitions
 
-document :: Parser Document
-document = Document <$> (ignored *>token definitions)
-
-definitions :: Parser (NonEmpty Definition)
+definitions :: Parser (NonEmpty DefinitionNode)
 definitions = (:|) <$> definition <*> pure []
 
-definition :: Parser Definition
-definition = ExecutableDefinition <$> executableDefinition
+definition :: Parser DefinitionNode
+definition = DNExecutableDefinition <$> executableDefinition
 
-executableDefinition :: Parser ExecDef
-executableDefinition = OpDefExecutableDefinition <$> opDef
+executableDefinition :: Parser ExecutableDefinitionNode
+executableDefinition = pure EDN -- <$> opDef
 
-opDef :: Parser OpDef
-opDef =
-            SelSetOperationDefinition <$> selSetOpDef
-        <|> OpTypeOperationDefinition <$> token opType <*> token (option Nothing (Just <$> name) ) <*> pure Nothing <*> pure Nothing <*> selSetOpDef
+-- opDef :: Parser OpDef
+-- opDef =
+--             SelSetOperationDefinition <$> selSetOpDef
+--         <|> OpTypeOperationDefinition <$> token opType <*> token (option Nothing (Just <$> name) ) <*> pure Nothing <*> pure Nothing <*> selSetOpDef
 
-opType :: Parser OperationType
-opType = QUERY <$ "query" <|> MUTATION <$ "mutation" <|> SUBSCRIPTION <$ "subscription"
+-- opType :: Parser OperationType
+-- opType = QUERY <$ "query" <|> MUTATION <$ "mutation" <|> SUBSCRIPTION <$ "subscription"
 
-selSetOpDef :: Parser SelectionSet
-selSetOpDef = SelectionSet <$> (token "{" *> token selections <* token "}")
+-- selSetOpDef :: Parser SelectionSet
+-- selSetOpDef = SelectionSet <$> (token "{" *> token selections <* token "}")
 
-selections :: Parser [Selection]
-selections = (:) <$> selection <*> many selection
+-- selections :: Parser [Selection]
+-- selections = (:) <$> selection <*> many selection
 
-selection :: Parser Selection
-selection = Field <$> pure Nothing <*> token name <*> pure Nothing <*> pure Nothing <*> pure Nothing
+-- selection :: Parser Selection
+-- selection = Field <$> pure Nothing <*> token name <*> pure Nothing <*> pure Nothing <*> pure Nothing
 
-name :: Parser Text
-name = token $ append <$> takeWhile1 isA_z
-                    <*> Data.Attoparsec.Text.takeWhile ((||) <$> isDigit <*> isA_z)
-  where
-    isA_z =  inClass $ '_' : ['A'..'Z'] <> ['a'..'z']
-
-
-token :: Parser a -> Parser a
-token t = t <* (ignored <|> endOfInput)
+-- name :: Parser Text
+-- name = token $ append <$> takeWhile1 isA_z
+--                     <*> Data.Attoparsec.Text.takeWhile ((||) <$> isDigit <*> isA_z)
+--   where
+--     isA_z =  inClass $ '_' : ['A'..'Z'] <> ['a'..'z']
 
 
-ignored :: Parser ()
-ignored =
-    do
-        c <- peekChar'
-        if (isSpace c || c == ',') -- this should be OK, spec has weird def of newline
-            then anyChar *> ignored
-            else when (c == '#') $ manyTill anyChar endOfLine *> ignored
+-- token :: Parser a -> Parser a
+-- token t = t <* (ignored <|> endOfInput)
+
+
+-- ignored :: Parser ()
+-- ignored =
+--     do
+--         c <- peekChar'
+--         if (isSpace c || c == ',') -- this should be OK, spec has weird def of newline
+--             then anyChar *> ignored
+--             else when (c == '#') $ manyTill anyChar endOfLine *> ignored
 
 
