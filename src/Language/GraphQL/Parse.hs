@@ -66,6 +66,7 @@ value =
         <|> VBool <$ token "true" <*> pure True
         <|> VBool <$ token "false" <*> pure False
         <|> VNull <$ token "null"
+        <|> VEnum <$> name
     where
         number = do
             parsed <- scientific

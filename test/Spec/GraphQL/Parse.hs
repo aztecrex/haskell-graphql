@@ -60,7 +60,8 @@ tests = testGroup "Parse" [
             testLiteral "string with spaces" "\"  this is string  \"" (VString "  this is string  "),
             testLiteral "bool - true" "true" (VBool True),
             testLiteral "bool - false" "false" (VBool False),
-            testLiteral "null" "null" (VNull)
+            testLiteral "null" "null" VNull,
+            testLiteral "enum" "CLOSED" (VEnum "CLOSED")
             ]
     ]
 
