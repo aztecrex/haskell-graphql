@@ -65,6 +65,7 @@ value =
         <|> VString <$> token ("\"" *> Atto.takeWhile (/= '"') <* "\"" )
         <|> VBool <$ token "true" <*> pure True
         <|> VBool <$ token "false" <*> pure False
+        <|> VNull <$ token "null"
     where
         number = do
             parsed <- scientific
