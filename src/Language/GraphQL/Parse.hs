@@ -28,7 +28,7 @@ operationDefinition =
         <|> ODNTyped <$> operationType <*> token (option Nothing (Just <$> name) ) <*> pure Nothing <*> pure Nothing <*> selectionSet
 
 operationType :: Parser OperationType
-operationType = OT <$ token "query"
+operationType = QUERY <$ token "query"
 -- opType = QUERY <$ "query" <|> MUTATION <$ "mutation" <|> SUBSCRIPTION <$ "subscription"
 
 selectionSet :: Parser SelectionSet
