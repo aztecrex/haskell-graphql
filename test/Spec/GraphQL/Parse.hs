@@ -4,7 +4,11 @@ module Spec.GraphQL.Parse (tests) where
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
 
+import Data.Attoparsec.Text (parseOnly)
 import Data.List.NonEmpty (NonEmpty ((:|)))
+import Data.Monoid ((<>))
+import Data.Text (Text)
+import Language.GraphQL.Parse
 import Language.GraphQL.Syntax
 import Language.GraphQL.TH (graphql)
 
@@ -46,10 +50,33 @@ tests = testGroup "Parse" [
                                 ]
                     )) Nothing []
                 )) :| []
-            ]
+            ],
+        testLiteral "int" "7" (VInt 7),
+        testLiteral "int from" "7.000" (VInt 7),
+        testLiteral "float" "7.034" (VFloat 7.034),
+        testLiteral "float e" "-112.3e-4" (VFloat (-112.3e-4)),
+        testLiteral "string" "\"this is string\"" (VString "this is string"),
+        testLiteral "string with spaces" "\"  this is string  \"" (VString "  this is string  ")
     ]
 
 testParse :: [Char] -> DocumentNode -> DocumentNode -> TestTree
 testParse name actual expected = testCase name $ actual @?= expected
+
+testLiteral :: [Char] -> Text -> Value -> TestTree
+testLiteral name lit expected = testCase name $
+                (parseOnly document ("query ($a:Int = " <> lit <> ") {}")) @?=
+                (
+                    Right (
+                        (DNExecutable (
+                            EDNOperation(
+                                ODNTyped QUERY Nothing (
+                                    Just (
+                                        (VariableDefinition "a" (TNamed "Int" False) (Just expected)) :| []
+                                    )
+                                ) Nothing []
+                            )
+                        ) :| [])
+                    )
+                )
 
 -- Field (Maybe Text) Text (Maybe Arguments) (Maybe Directives) (Maybe SelectionSet)
