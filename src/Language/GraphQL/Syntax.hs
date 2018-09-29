@@ -43,11 +43,16 @@ data Selection =
 
 type VariableDefinitions = NonEmpty VariableDefinition
 
-data Type = T -- NYI
-data Value = V -- NYI
-data Arguments = AS -- NYI
+data VariableDefinition =
+        VariableDefinition Text Type (Maybe Value)
     deriving (Show, Eq, Generic, Data)
-data VariableDefinition = VD -- NYI
+
+
+data Type = T -- NYI
+    deriving (Show, Eq, Generic, Data)
+data Value = V -- NYI
+    deriving (Show, Eq, Generic, Data)
+data Arguments = AS -- NYI
     deriving (Show, Eq, Generic, Data)
 data Directives = DS -- NYI
     deriving (Show, Eq, Generic, Data)

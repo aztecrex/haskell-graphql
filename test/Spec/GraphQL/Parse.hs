@@ -28,7 +28,12 @@ tests = testGroup "Parse" [
                 Field Nothing "posted" Nothing Nothing Nothing]
                 )) :| [],
         testParse "variables" [graphql|query ($a: Int $b: Int! = 7) {}|] $
-            DNExecutable (EDNOperation (ODNTyped QUERY Nothing (Just (VD :| [VD])) Nothing []
+            DNExecutable (EDNOperation (
+                        ODNTyped QUERY Nothing (
+                            Just (
+                                VariableDefinition "a" T Nothing
+                            :| [VariableDefinition "b" T (Just V)]
+                    )) Nothing []
                 )) :| []
 
     ]

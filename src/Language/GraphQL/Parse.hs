@@ -40,10 +40,10 @@ variableDefinitions :: Parser VariableDefinitions
 variableDefinitions = (:|) <$> variableDefinition <*> many variableDefinition
 
 variableDefinition :: Parser VariableDefinition
-variableDefinition = VD <$ (variable <* token ":" <* type_ <* option Nothing (Just <$> vdefault))
+variableDefinition = VariableDefinition <$> variable <* token ":" <*> type_ <*> option Nothing (Just <$> vdefault)
 
 variable :: Parser Text
-variable = token ("$" <* name)
+variable = token ("$" *> name)
 
 type_ :: Parser Type
 type_ = T <$ token ( "Int!" <|> "Int" )
