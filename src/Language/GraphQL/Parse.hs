@@ -35,8 +35,7 @@ selectionSet :: Parser SelectionSet
 selectionSet = token "{" *> many selection <* token "}"
 
 selection :: Parser Selection
-selection = S <$ token name
--- selection = Field <$> pure Nothing <*> token name <*> pure Nothing <*> pure Nothing <*> pure Nothing
+selection = Field <$> pure Nothing <*> token name <*> pure Nothing <*> pure Nothing <*> pure Nothing
 
 
 name :: Parser Text

@@ -13,11 +13,20 @@ tests :: TestTree
 tests = testGroup "Parse" [
     testGroup "Kitchen Sink" [
         testParse "full query" [graphql|query TestQ { amount posted }|] $
-            DNExecutable (EDNOperation (ODNTyped QUERY (Just "TestQ") Nothing Nothing [S, S])) :| [],
+            DNExecutable (EDNOperation (ODNTyped QUERY (Just "TestQ") Nothing Nothing
+                [Field Nothing "amount" Nothing Nothing Nothing,
+                 Field Nothing "posted" Nothing Nothing Nothing]
+                 )) :| [],
         testParse "anon query" [graphql|query { amount posted }|] $
-            DNExecutable (EDNOperation (ODNTyped QUERY Nothing Nothing Nothing [S, S])) :| [],
+            DNExecutable (EDNOperation (ODNTyped QUERY Nothing Nothing Nothing
+                [Field Nothing "amount" Nothing Nothing Nothing,
+                Field Nothing "posted" Nothing Nothing Nothing]
+                )) :| [],
         testParse "shorthand query" [graphql|{ amount posted }|] $
-            DNExecutable (EDNOperation (ODNSelectionSet [S, S])) :| []
+                DNExecutable (EDNOperation (ODNSelectionSet
+                [Field Nothing "amount" Nothing Nothing Nothing,
+                Field Nothing "posted" Nothing Nothing Nothing]
+                )) :| []
     ]
 
 
@@ -26,3 +35,4 @@ tests = testGroup "Parse" [
 testParse :: [Char] -> DocumentNode -> DocumentNode -> TestTree
 testParse name actual expected = testCase name $ actual @?= expected
 
+-- Field (Maybe Text) Text (Maybe Arguments) (Maybe Directives) (Maybe SelectionSet)

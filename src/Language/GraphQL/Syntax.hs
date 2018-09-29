@@ -35,9 +35,16 @@ data OperationType = QUERY
 
 type SelectionSet = [Selection]
 
-data Selection = S
+data Selection =
+        Field (Maybe Text) Text (Maybe Arguments) (Maybe Directives) (Maybe SelectionSet)
+    -- |   FragmentSpread Text (Maybe Directives)
+    -- |   InlineFragment (Maybe TypeCondition) (Maybe Directives) SelectionSet
     deriving (Show, Eq, Generic, Data)
 
+
+
+data Arguments = AS -- NYI
+    deriving (Show, Eq, Generic, Data)
 data VariableDefinitions = VDS -- NYI
     deriving (Show, Eq, Generic, Data)
 data Directives = DS -- NYI
@@ -164,14 +171,6 @@ data TypeSystemDefinitionExtensionNode = TSDEN -- NYI
 
 -- data Directive where
 --     Directive :: Text -> Arguments -> Directive
---     deriving (Show, Eq, Generic, Data)
-
-
-
--- data Selection where
---     Field :: Maybe Alias -> Text -> Maybe Arguments -> Maybe Directives -> Maybe SelectionSet -> Selection
---     FragmentSpread :: FragmentName -> Maybe Directives -> Selection
---     InlineFragment :: Maybe TypeCondition -> Maybe Directives -> SelectionSet -> Selection
 --     deriving (Show, Eq, Generic, Data)
 
 -- data FragmentName where
