@@ -41,11 +41,13 @@ data Selection =
     -- |   InlineFragment (Maybe TypeCondition) (Maybe Directives) SelectionSet
     deriving (Show, Eq, Generic, Data)
 
+type VariableDefinitions = NonEmpty VariableDefinition
 
-
+data Type = T -- NYI
+data Value = V -- NYI
 data Arguments = AS -- NYI
     deriving (Show, Eq, Generic, Data)
-data VariableDefinitions = VDS -- NYI
+data VariableDefinition = VD -- NYI
     deriving (Show, Eq, Generic, Data)
 data Directives = DS -- NYI
     deriving (Show, Eq, Generic, Data)

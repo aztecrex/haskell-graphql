@@ -23,10 +23,14 @@ tests = testGroup "Parse" [
                 Field Nothing "posted" Nothing Nothing Nothing]
                 )) :| [],
         testParse "shorthand query" [graphql|{ amount posted }|] $
-                DNExecutable (EDNOperation (ODNSelectionSet
+            DNExecutable (EDNOperation (ODNSelectionSet
                 [Field Nothing "amount" Nothing Nothing Nothing,
                 Field Nothing "posted" Nothing Nothing Nothing]
+                )) :| [],
+        testParse "variables" [graphql|query ($a: Int $b: Int! = 7) {}|] $
+            DNExecutable (EDNOperation (ODNTyped QUERY Nothing (Just (VD :| [VD])) Nothing []
                 )) :| []
+
     ]
 
 

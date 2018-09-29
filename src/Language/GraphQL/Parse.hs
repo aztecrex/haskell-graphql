@@ -25,18 +25,40 @@ executableDefinition = EDNOperation <$> operationDefinition -- <$> opDef
 operationDefinition :: Parser OperationDefinitionNode
 operationDefinition =
             ODNSelectionSet <$> selectionSet
-        <|> ODNTyped <$> operationType <*> token (option Nothing (Just <$> name) ) <*> pure Nothing <*> pure Nothing <*> selectionSet
+        <|> ODNTyped <$> operationType <*> token (option Nothing (Just <$> name) ) <*> maybeVariableDefinitions <*> pure Nothing <*> selectionSet
 
 operationType :: Parser OperationType
 operationType = QUERY <$ token "query"
 -- opType = QUERY <$ "query" <|> MUTATION <$ "mutation" <|> SUBSCRIPTION <$ "subscription"
+
+maybeVariableDefinitions :: Parser (Maybe VariableDefinitions)
+maybeVariableDefinitions =
+                Just <$> (token "(" *> variableDefinitions <* token ")")
+        <|>     Nothing <$ token ""
+
+variableDefinitions :: Parser VariableDefinitions
+variableDefinitions = (:|) <$> variableDefinition <*> many variableDefinition
+
+variableDefinition :: Parser VariableDefinition
+variableDefinition = VD <$ (variable <* token ":" <* type_ <* option Nothing (Just <$> vdefault))
+
+variable :: Parser Text
+variable = token ("$" <* name)
+
+type_ :: Parser Type
+type_ = T <$ token ( "Int!" <|> "Int" )
+
+vdefault :: Parser Value
+vdefault = token "=" *> token value
+
+value :: Parser Value
+value = V <$ token "7"
 
 selectionSet :: Parser SelectionSet
 selectionSet = token "{" *> many selection <* token "}"
 
 selection :: Parser Selection
 selection = Field <$> pure Nothing <*> token name <*> pure Nothing <*> pure Nothing <*> pure Nothing
-
 
 name :: Parser Text
 name = token $ append <$> takeWhile1 isA_z
