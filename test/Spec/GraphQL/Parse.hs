@@ -51,12 +51,16 @@ tests = testGroup "Parse" [
                     )) Nothing []
                 )) :| []
             ],
-        testLiteral "int" "7" (VInt 7),
-        testLiteral "int from" "7.000" (VInt 7),
-        testLiteral "float" "7.034" (VFloat 7.034),
-        testLiteral "float e" "-112.3e-4" (VFloat (-112.3e-4)),
-        testLiteral "string" "\"this is string\"" (VString "this is string"),
-        testLiteral "string with spaces" "\"  this is string  \"" (VString "  this is string  ")
+        testGroup "Values" [
+            testLiteral "int" "7" (VInt 7),
+            testLiteral "int from" "7.000" (VInt 7),
+            testLiteral "float" "7.034" (VFloat 7.034),
+            testLiteral "float e" "-112.3e-4" (VFloat (-112.3e-4)),
+            testLiteral "string" "\"this is string\"" (VString "this is string"),
+            testLiteral "string with spaces" "\"  this is string  \"" (VString "  this is string  "),
+            testLiteral "bool - true" "true" (VBool True),
+            testLiteral "bool - false" "false" (VBool False)
+            ]
     ]
 
 testParse :: [Char] -> DocumentNode -> DocumentNode -> TestTree

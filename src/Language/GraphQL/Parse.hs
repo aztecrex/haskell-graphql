@@ -63,6 +63,8 @@ value :: Parser Value
 value =
             number
         <|> VString <$> token ("\"" *> Atto.takeWhile (/= '"') <* "\"" )
+        <|> VBool <$ token "true" <*> pure True
+        <|> VBool <$ token "false" <*> pure False
     where
         number = do
             parsed <- scientific
