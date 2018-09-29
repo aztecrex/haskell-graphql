@@ -48,14 +48,23 @@ data VariableDefinition =
     deriving (Show, Eq, Generic, Data)
 
 data Type =
-        T -- delete, temp
-    |   TNamed Text Bool
+        TNamed Text Bool
     |   TList Type Bool
     deriving (Show, Eq, Generic, Data)
 
-
-data Value = V -- NYI
+data Value =
+        V -- temp, delete
+    |   VVariable Text
+    |   VInt Int  -- 32 bits precision per GQL spec
+    |   VFloat Double -- 64 bits precision per GQL spec
+    |   VString Text
+    |   VBool Bool
+    |   VNull
+    |   VEnum Text
+    |   VList [Value]
+    |   VObject (Text, Value)
     deriving (Show, Eq, Generic, Data)
+
 data Arguments = AS -- NYI
     deriving (Show, Eq, Generic, Data)
 data Directives = DS -- NYI

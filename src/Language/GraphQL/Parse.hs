@@ -6,6 +6,7 @@ import Data.Attoparsec.Text
 import Data.Char (isSpace, isDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
+import qualified Data.Scientific as Sci (floatingOrInteger, scientific, toBoundedInteger)
 import Data.Text (Text, append)
 import Language.GraphQL.Syntax
 
@@ -58,7 +59,30 @@ vdefault :: Parser Value
 vdefault = token "=" *> token value
 
 value :: Parser Value
-value = V <$ token "7"
+value =
+        number
+    where
+        number = do
+            parsed <- scientific
+            let interpreted = Sci.floatingOrInteger parsed
+            either asFloat asInt interpreted
+            where
+                asFloat = pure . VFloat
+                asInt intv =
+                    let maybeInt = (Sci.toBoundedInteger . (flip Sci.scientific 0)) intv
+                    in maybe (fail "out of range integer") (pure . VInt) maybeInt
+
+                    -- either (pure . VFloat)
+            --     (maybe (fail "Out of range integer") (pure . VInt))
+
+        -- floatOrInt32Value =
+        --     Attoparsec.scientific >>=
+        --     either (pure . ValueFloat)
+        --            (maybe (fail "Integer value is out of range.")
+        --                   (pure . ValueInt)
+        --                   . toBoundedInteger . (`scientific` 0))
+        --            . floatingOrInteger
+
 
 selectionSet :: Parser SelectionSet
 selectionSet = token "{" *> many selection <* token "}"

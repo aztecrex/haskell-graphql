@@ -27,21 +27,22 @@ tests = testGroup "Parse" [
                 [Field Nothing "amount" Nothing Nothing Nothing,
                 Field Nothing "posted" Nothing Nothing Nothing]
                 )) :| [],
-        testParse "variables" [graphql|query ($a: Int! $b: Float = 7 $c: [[Bool!]!]) {}|] $
+        testParse "variables" [graphql|query (
+                        $a: Int!
+                        $b: Float = 7
+                        $c: [[Bool!]!]
+                    ) {}|] $
             DNExecutable (EDNOperation (
                         ODNTyped QUERY Nothing (
                             Just (
                                 VariableDefinition "a" (TNamed "Int" True) Nothing
                             :| [
-                                VariableDefinition "b" (TNamed "Float" False) (Just V),
+                                VariableDefinition "b" (TNamed "Float" False) (Just (VInt 7)),
                                 VariableDefinition "c" (TList (TList (TNamed "Bool" True) True) False) Nothing
                                 ]
                     )) Nothing []
                 )) :| []
-
-    ]
-
-
+            ]
     ]
 
 testParse :: [Char] -> DocumentNode -> DocumentNode -> TestTree
