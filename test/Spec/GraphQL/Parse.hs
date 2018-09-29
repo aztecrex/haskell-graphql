@@ -30,6 +30,7 @@ tests = testGroup "Parse" [
         testParse "variables" [graphql|query (
                         $a: Int!
                         $b: Float = 7
+                        $b2: Float = 7.03
                         $c: [[Bool!]!]
                     ) {}|] $
             DNExecutable (EDNOperation (
@@ -38,6 +39,7 @@ tests = testGroup "Parse" [
                                 VariableDefinition "a" (TNamed "Int" True) Nothing
                             :| [
                                 VariableDefinition "b" (TNamed "Float" False) (Just (VInt 7)),
+                                VariableDefinition "b2" (TNamed "Float" False) (Just (VFloat 7.03)),
                                 VariableDefinition "c" (TList (TList (TNamed "Bool" True) True) False) Nothing
                                 ]
                     )) Nothing []
