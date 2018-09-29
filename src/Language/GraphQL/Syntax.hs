@@ -47,9 +47,13 @@ data VariableDefinition =
         VariableDefinition Text Type (Maybe Value)
     deriving (Show, Eq, Generic, Data)
 
-
-data Type = T -- NYI
+data Type =
+        T -- delete, temp
+    |   TNamed Text Bool
+    |   TList Type Bool
     deriving (Show, Eq, Generic, Data)
+
+
 data Value = V -- NYI
     deriving (Show, Eq, Generic, Data)
 data Arguments = AS -- NYI

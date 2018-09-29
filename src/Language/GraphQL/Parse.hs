@@ -46,7 +46,13 @@ variable :: Parser Text
 variable = token ("$" *> name)
 
 type_ :: Parser Type
-type_ = T <$ token ( "Int!" <|> "Int" )
+type_ =
+        TNamed <$> token (name <* "!") <*> pure True
+    <|> TNamed <$> token name <*> pure False
+    <|> TList <$> (token "[" *> token type_ <* token "]!") <*> pure True
+    <|> TList <$> (token "[" *> token type_ <* token "]") <*> pure False
+
+    -- T <$ token ( "Int!" <|> "Int" )
 
 vdefault :: Parser Value
 vdefault = token "=" *> token value
