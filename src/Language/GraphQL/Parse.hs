@@ -68,6 +68,7 @@ value =
         <|> VNull <$ token "null"
         <|> VEnum <$> name
         <|> VList <$> (token "[" *> many (token value) <* token "]")
+        <|> VObject <$> (token "{" *> many entry <* token "}")
     where
         number = do
             parsed <- scientific
@@ -78,6 +79,7 @@ value =
                 asInt intv =
                     let maybeInt = (Sci.toBoundedInteger . (flip Sci.scientific 0)) intv
                     in maybe (fail "out of range integer") (pure . VInt) maybeInt
+        entry = (,) <$> token name <* token ":" <*> token value
 
 
 selectionSet :: Parser SelectionSet

@@ -62,7 +62,7 @@ data Value =
     |   VNull
     |   VEnum Text
     |   VList [Value]
-    |   VObject (Text, Value)
+    |   VObject[(Text, Value)]
     deriving (Show, Eq, Generic, Data)
 
 data Arguments = AS -- NYI

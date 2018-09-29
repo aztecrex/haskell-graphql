@@ -63,7 +63,8 @@ tests = testGroup "Parse" [
             testLiteral "null" "null" VNull,
             testLiteral "enum" "CLOSED" (VEnum "CLOSED"),
             testLiteral "list" "[7 1.3 \"seven\"]" (VList [VInt 7, VFloat 1.3, VString "seven"]),
-            testLiteral "empty list" "[]" (VList [])
+            testLiteral "empty list" "[]" (VList []),
+            testLiteral "object" "{ birthday : \"happy\", age: 3}" (VObject [("birthday", VString "happy"), ("age", VInt 3)])
             ]
     ]
 
