@@ -12,18 +12,40 @@ import GHC.Generics
 type DocumentNode = NonEmpty DefinitionNode
 
 data DefinitionNode =
-        DNExecutableDefinition ExecutableDefinitionNode
-    |   DNTypeSystemDefinition TypeSystemDefinitionNode
-    |   DNTypeSystemExtensionDefinition TypeSystemDefinitionExtensionNode
+        DNExecutable ExecutableDefinitionNode
+    |   DNTypeSystem TypeSystemDefinitionNode
+    |   DNTypeSystemExtension TypeSystemDefinitionExtensionNode
         deriving (Show, Eq, Generic, Data)
 
 
-data ExecutableDefinitionNode = EDN -- NYI
+data ExecutableDefinitionNode =
+        EDNOperation OperationDefinitionNode
+    |   EDNFragment FragmentDefinitionNode
+        deriving (Show, Eq, Generic, Data)
+
+data OperationDefinitionNode =
+        ODNSelectionSet SelectionSet
+    |   ODNTyped OperationType (Maybe Text) (Maybe VariableDefinitions) (Maybe Directives) SelectionSet
     deriving (Show, Eq, Generic, Data)
+
+data SelectionSet = SS -- NYI
+    deriving (Show, Eq, Generic, Data)
+data OperationType = OT -- NYI
+    deriving (Show, Eq, Generic, Data)
+data VariableDefinitions = VDS -- NYI
+    deriving (Show, Eq, Generic, Data)
+data Directives = DS -- NYI
+    deriving (Show, Eq, Generic, Data)
+
+data FragmentDefinitionNode = FDN -- NYI
+    deriving (Show, Eq, Generic, Data)
+
 data TypeSystemDefinitionNode = TSDN -- NYI
     deriving (Show, Eq, Generic, Data)
 data TypeSystemDefinitionExtensionNode = TSDEN -- NYI
     deriving (Show, Eq, Generic, Data)
+
+
 
 -- data ExecDef where
 --     OpDefExecutableDefinition :: OpDef -> ExecDef
@@ -106,11 +128,6 @@ data TypeSystemDefinitionExtensionNode = TSDEN -- NYI
 --     UnionTypeExtension :: Text -> Maybe Directives -> Maybe UnionMemTypes -> TypeExt
 --     EnumTypeExtension :: Text -> Maybe Directives -> EnumValsDef -> TypeExt
 --     InputObjectTypeExtension :: Text -> Maybe Directives -> InputFieldsDefinition -> TypeExt
---     deriving (Show, Eq, Generic, Data)
-
--- data OpDef where
---     SelSetOperationDefinition :: SelectionSet -> OpDef
---     OpTypeOperationDefinition :: OperationType -> Maybe Text -> Maybe VariableDefinitions -> Maybe Directives -> SelectionSet -> OpDef
 --     deriving (Show, Eq, Generic, Data)
 
 -- data OperationType where

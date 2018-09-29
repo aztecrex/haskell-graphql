@@ -17,45 +17,45 @@ definitions :: Parser (NonEmpty DefinitionNode)
 definitions = (:|) <$> definition <*> pure []
 
 definition :: Parser DefinitionNode
-definition = DNExecutableDefinition <$> executableDefinition
+definition = DNExecutable <$> executableDefinition
 
 executableDefinition :: Parser ExecutableDefinitionNode
-executableDefinition = pure EDN -- <$> opDef
+executableDefinition = EDNOperation <$> operationDefinition -- <$> opDef
 
--- opDef :: Parser OpDef
--- opDef =
---             SelSetOperationDefinition <$> selSetOpDef
---         <|> OpTypeOperationDefinition <$> token opType <*> token (option Nothing (Just <$> name) ) <*> pure Nothing <*> pure Nothing <*> selSetOpDef
+operationDefinition :: Parser OperationDefinitionNode
+operationDefinition =
+            ODNSelectionSet <$> selectionSet
+        <|> ODNTyped <$> operationType <*> token (option Nothing (Just <$> name) ) <*> pure Nothing <*> pure Nothing <*> selectionSet
 
--- opType :: Parser OperationType
+operationType :: Parser OperationType
+operationType = OT <$ token "query"
 -- opType = QUERY <$ "query" <|> MUTATION <$ "mutation" <|> SUBSCRIPTION <$ "subscription"
 
--- selSetOpDef :: Parser SelectionSet
--- selSetOpDef = SelectionSet <$> (token "{" *> token selections <* token "}")
+selectionSet :: Parser SelectionSet
+selectionSet = SS <$ (token "{" *> many name <* token "}")
 
--- selections :: Parser [Selection]
--- selections = (:) <$> selection <*> many selection
+--SS:: arser [Selectiomany anyChar = (:) <$> selection <*> many selection
 
 -- selection :: Parser Selection
 -- selection = Field <$> pure Nothing <*> token name <*> pure Nothing <*> pure Nothing <*> pure Nothing
 
--- name :: Parser Text
--- name = token $ append <$> takeWhile1 isA_z
---                     <*> Data.Attoparsec.Text.takeWhile ((||) <$> isDigit <*> isA_z)
---   where
---     isA_z =  inClass $ '_' : ['A'..'Z'] <> ['a'..'z']
+name :: Parser Text
+name = token $ append <$> takeWhile1 isA_z
+                    <*> Data.Attoparsec.Text.takeWhile ((||) <$> isDigit <*> isA_z)
+  where
+    isA_z =  inClass $ '_' : ['A'..'Z'] <> ['a'..'z']
 
 
--- token :: Parser a -> Parser a
--- token t = t <* (ignored <|> endOfInput)
+token :: Parser a -> Parser a
+token t = t <* (ignored <|> endOfInput)
 
 
--- ignored :: Parser ()
--- ignored =
---     do
---         c <- peekChar'
---         if (isSpace c || c == ',') -- this should be OK, spec has weird def of newline
---             then anyChar *> ignored
---             else when (c == '#') $ manyTill anyChar endOfLine *> ignored
+ignored :: Parser ()
+ignored =
+    do
+        c <- peekChar'
+        if (isSpace c || c == ',') -- this should be OK, spec has weird def of newline
+            then anyChar *> ignored
+            else when (c == '#') $ manyTill anyChar endOfLine *> ignored
 
 

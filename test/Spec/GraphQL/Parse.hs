@@ -82,14 +82,16 @@ kitchenSink :: [Case]
 kitchenSink = [
     (
         [graphql|query TestQ { amount posted }|],
-        DNExecutableDefinition EDN :| []
+        DNExecutable (EDNOperation (ODNTyped OT (Just "TestQ") Nothing Nothing SS)) :| []
     ),
     (
         [graphql|query { amount posted }|],
-        DNExecutableDefinition EDN :| []
+        DNExecutable (EDNOperation (ODNTyped OT Nothing Nothing Nothing SS)) :| []
     ),
     (
         [graphql|{ amount posted }|],
-        DNExecutableDefinition EDN :| []
+        DNExecutable (EDNOperation (ODNSelectionSet SS)) :| []
     )
     ]
+
+
