@@ -31,6 +31,7 @@ tests = testGroup "Parse" [
                         $a: Int!
                         $b: Float = 7
                         $b2: Float = 7.03
+                        $z: String! = "very carefully"
                         $c: [[Bool!]!]
                     ) {}|] $
             DNExecutable (EDNOperation (
@@ -40,6 +41,7 @@ tests = testGroup "Parse" [
                             :| [
                                 VariableDefinition "b" (TNamed "Float" False) (Just (VInt 7)),
                                 VariableDefinition "b2" (TNamed "Float" False) (Just (VFloat 7.03)),
+                                VariableDefinition "z"  (TNamed "String" True) (Just (VString "very carefully")),
                                 VariableDefinition "c" (TList (TList (TNamed "Bool" True) True) False) Nothing
                                 ]
                     )) Nothing []

@@ -2,7 +2,7 @@ module Language.GraphQL.Parse (document) where
 
 import Control.Applicative ((<|>), many)
 import Control.Monad (when)
-import Data.Attoparsec.Text
+import Data.Attoparsec.Text as Atto
 import Data.Char (isSpace, isDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
@@ -58,9 +58,11 @@ type_ =
 vdefault :: Parser Value
 vdefault = token "=" *> token value
 
+
 value :: Parser Value
 value =
-        number
+            number
+        <|> VString <$> token ("\"" *> Atto.takeWhile (/= '"') <* "\"" )
     where
         number = do
             parsed <- scientific
@@ -72,17 +74,6 @@ value =
                     let maybeInt = (Sci.toBoundedInteger . (flip Sci.scientific 0)) intv
                     in maybe (fail "out of range integer") (pure . VInt) maybeInt
 
-                    -- either (pure . VFloat)
-            --     (maybe (fail "Out of range integer") (pure . VInt))
-
-        -- floatOrInt32Value =
-        --     Attoparsec.scientific >>=
-        --     either (pure . ValueFloat)
-        --            (maybe (fail "Integer value is out of range.")
-        --                   (pure . ValueInt)
-        --                   . toBoundedInteger . (`scientific` 0))
-        --            . floatingOrInteger
-
 
 selectionSet :: Parser SelectionSet
 selectionSet = token "{" *> many selection <* token "}"
@@ -92,7 +83,7 @@ selection = Field <$> pure Nothing <*> token name <*> pure Nothing <*> pure Noth
 
 name :: Parser Text
 name = token $ append <$> takeWhile1 isA_z
-                    <*> Data.Attoparsec.Text.takeWhile ((||) <$> isDigit <*> isA_z)
+                    <*> Atto.takeWhile ((||) <$> isDigit <*> isA_z)
   where
     isA_z =  inClass $ '_' : ['A'..'Z'] <> ['a'..'z']
 
