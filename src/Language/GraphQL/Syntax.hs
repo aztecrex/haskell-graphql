@@ -33,7 +33,9 @@ data OperationType = QUERY
     -- SUBSCRIPTION :: OperationType
     deriving (Show, Eq, Generic, Data)
 
-data SelectionSet = SS -- NYI
+type SelectionSet = [Selection]
+
+data Selection = S
     deriving (Show, Eq, Generic, Data)
 
 data VariableDefinitions = VDS -- NYI
@@ -165,9 +167,6 @@ data TypeSystemDefinitionExtensionNode = TSDEN -- NYI
 --     deriving (Show, Eq, Generic, Data)
 
 
--- data SelectionSet where
---     SelectionSet :: [Selection] -> SelectionSet
---     deriving (Show, Eq, Generic, Data)
 
 -- data Selection where
 --     Field :: Maybe Alias -> Text -> Maybe Arguments -> Maybe Directives -> Maybe SelectionSet -> Selection

@@ -11,87 +11,18 @@ import Language.GraphQL.TH (graphql)
 
 tests :: TestTree
 tests = testGroup "Parse" [
-
-    testCase "kitchenSink" $ (fst <$> kitchenSink) @?= (snd <$> kitchenSink)
-    -- testCase "full query" $ do
-    --     let
-    --     -- when
-    --         parsed = [graphql|query TestQ { amount posted }|]
-
-    --     -- then
-    --         expected = Document $
-    --             (ExecutableDefinition
-    --                 (OpDefExecutableDefinition
-    --                     (OpTypeOperationDefinition QUERY (Just "TestQ") Nothing Nothing
-    --                         (SelectionSet [
-    --                             Field Nothing "amount" Nothing Nothing Nothing,
-    --                             Field Nothing "posted" Nothing Nothing Nothing
-    --                         ])
-    --                     )
-    --                 )
-    --             ) :| []
-    --     parsed @?= expected,
-
-    -- testCase "unnamed query syntax" $ do
-    --     let
-    --     -- when
-    --         parsed = [graphql|query { amount posted }|]
-
-    --     -- then
-    --         expected = Document $
-    --             (ExecutableDefinition
-    --                 (OpDefExecutableDefinition
-    --                     (OpTypeOperationDefinition QUERY Nothing Nothing Nothing
-    --                         (SelectionSet [
-    --                             Field Nothing "amount" Nothing Nothing Nothing,
-    --                             Field Nothing "posted" Nothing Nothing Nothing
-    --                         ])
-    --                     )
-    --                 )
-    --             ) :| []
-    --     parsed @?= expected,
-
-    -- testCase "shorthand query syntax" $ do
-    --     let
-    --     -- when
-    --         parsed = [graphql|{ amount posted }|]
-
-    --     -- then
-    --         expected = Document $
-    --             (ExecutableDefinition
-    --                 (OpDefExecutableDefinition
-    --                     (SelSetOperationDefinition
-    --                         (SelectionSet [
-    --                             Field Nothing "amount" Nothing Nothing Nothing,
-    --                             Field Nothing "posted" Nothing Nothing Nothing
-    --                         ])
-    --                     )
-    --                 )
-    --             ) :| []
-    --     parsed @?= expected,
-
-    -- testCase "ignore commas" $
-    --         [graphql|{amount posted customer}|] @?= [graphql|{amount, posted customer}|]
+    testGroup "Kitchen Sink" [
+        testParse "full query" [graphql|query TestQ { amount posted }|] $
+            DNExecutable (EDNOperation (ODNTyped QUERY (Just "TestQ") Nothing Nothing [S, S])) :| [],
+        testParse "anon query" [graphql|query { amount posted }|] $
+            DNExecutable (EDNOperation (ODNTyped QUERY Nothing Nothing Nothing [S, S])) :| [],
+        testParse "shorthand query" [graphql|{ amount posted }|] $
+            DNExecutable (EDNOperation (ODNSelectionSet [S, S])) :| []
+    ]
 
 
     ]
 
-type Case = (DocumentNode, DocumentNode)
-
-kitchenSink :: [Case]
-kitchenSink = [
-    (
-        [graphql|query TestQ { amount posted }|],
-        DNExecutable (EDNOperation (ODNTyped QUERY (Just "TestQ") Nothing Nothing SS)) :| []
-    ),
-    (
-        [graphql|query { amount posted }|],
-        DNExecutable (EDNOperation (ODNTyped QUERY Nothing Nothing Nothing SS)) :| []
-    ),
-    (
-        [graphql|{ amount posted }|],
-        DNExecutable (EDNOperation (ODNSelectionSet SS)) :| []
-    )
-    ]
-
+testParse :: [Char] -> DocumentNode -> DocumentNode -> TestTree
+testParse name actual expected = testCase name $ actual @?= expected
 

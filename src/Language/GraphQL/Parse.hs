@@ -32,12 +32,12 @@ operationType = QUERY <$ token "query"
 -- opType = QUERY <$ "query" <|> MUTATION <$ "mutation" <|> SUBSCRIPTION <$ "subscription"
 
 selectionSet :: Parser SelectionSet
-selectionSet = SS <$ (token "{" *> many name <* token "}")
+selectionSet = token "{" *> many selection <* token "}"
 
---SS:: arser [Selectiomany anyChar = (:) <$> selection <*> many selection
-
--- selection :: Parser Selection
+selection :: Parser Selection
+selection = S <$ token name
 -- selection = Field <$> pure Nothing <*> token name <*> pure Nothing <*> pure Nothing <*> pure Nothing
+
 
 name :: Parser Text
 name = token $ append <$> takeWhile1 isA_z
