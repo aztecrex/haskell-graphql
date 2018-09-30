@@ -34,7 +34,7 @@ type SelectionSet = NonEmpty Selection
 
 data Selection =
         Field (Maybe Text) Text (Maybe Arguments) (Maybe Directives) (Maybe SelectionSet)
-    -- |   FragmentSpread Text (Maybe Directives)
+    |   FragmentSpread Text (Maybe Directives)
     -- |   InlineFragment (Maybe TypeCondition) (Maybe Directives) SelectionSet
     deriving (Show, Eq, Generic, Data)
 
@@ -84,11 +84,6 @@ data TypeSystemDefinitionExtensionNode = TSDEN -- NYI
     deriving (Show, Eq, Generic, Data)
 
 
-
--- data ExecDef where
---     OpDefExecutableDefinition :: OpDef -> ExecDef
---     FragmentDefinition :: FragmentName -> TypeCondition -> Maybe Directives -> ExecDef
---     deriving (Show, Eq, Generic, Data)
 
 -- data TypeSysDef where
 --     SchemaDefinition :: Maybe Directives -> NonEmpty RootOperationTypeDefinition -> TypeSysDef

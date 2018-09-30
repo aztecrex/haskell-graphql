@@ -101,8 +101,13 @@ tests = testGroup "Parse" [
             DNExecutable (EDNFragment (
                 FragmentDefinition "Variation" "Recipe" Nothing (nempt [sfield "flavor"])
                 ))
-                ]
-        ],
+                ],
+        testParse "fragment spread" [graphql|{ amount posted ... Door }|] $
+            DNExecutable (EDNOperation (ODNSelectionSet
+                (nempt [sfield "amount",sfield "posted",
+                        FragmentSpread "Door" Nothing])
+                )) :| []
+            ],
         testGroup "Values" [
             testLiteral "int" "7" (VInt 7),
             testLiteral "int from" "7.000" (VInt 7),
