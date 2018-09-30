@@ -65,7 +65,14 @@ data FragmentDefinitionNode =
         FragmentDefinition Text Text (Maybe Directives) SelectionSet
     deriving (Show, Eq, Generic, Data)
 
-data Arguments = AS -- NYI
+type Arguments = NonEmpty Argument
+
+-- data Argument where
+--     Argument :: Text -> Value -> Argument
+--     deriving (Show, Eq, Generic, Data)
+
+
+data Argument = A -- NYI
     deriving (Show, Eq, Generic, Data)
 data Directives = DS -- NYI
     deriving (Show, Eq, Generic, Data)
