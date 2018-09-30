@@ -1,4 +1,4 @@
-module Language.GraphQL.Parse (document) where
+module Language.GraphQL.Parse where
 
 import Control.Applicative ((<|>), many)
 import Control.Monad (when)
@@ -67,7 +67,7 @@ vdefault = token "=" *> token value
 
 value :: Parser Value
 value =
-            number
+            numv
         <|> VString <$> token ("\"" *> Atto.takeWhile (/= '"') <* "\"" )
         <|> VBool <$ token "true" <*> pure True
         <|> VBool <$ token "false" <*> pure False
@@ -76,7 +76,7 @@ value =
         <|> VList <$> (token "[" *> many (token value) <* token "]")
         <|> VObject <$> (token "{" *> many entry <* token "}")
     where
-        number = do
+        numv = do
             parsed <- scientific
             let interpreted = Sci.floatingOrInteger parsed
             either asFloat asInt interpreted
@@ -102,15 +102,14 @@ name = token $ append <$> takeWhile1 isA_z
 
 
 token :: Parser a -> Parser a
-token t = t <* (ignored <|> endOfInput)
+token t = t <* ignored
 
 
 ignored :: Parser ()
 ignored =
+    endOfInput <|>
     do
         c <- peekChar'
         if (isSpace c || c == ',') -- this should be OK, spec has weird def of newline
             then anyChar *> ignored
-            else when (c == '#') $ manyTill anyChar endOfLine *> ignored
-
-
+            else when (c == '#') $ manyTill anyChar (endOfLine <|> endOfInput) *> ignored
