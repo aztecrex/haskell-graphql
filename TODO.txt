@@ -1,2 +1,15 @@
 block quoted literals
+single quoted literals must not span line
 string escapes
+inline fragment
+
+
+mutation
+
+
+
+subscription
+
+
+type definition
+

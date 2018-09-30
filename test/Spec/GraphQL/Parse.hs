@@ -29,7 +29,16 @@ tests = testGroup "Parse" [
             DNExecutable (EDNOperation (ODNSelectionSet
                 (nempt [sfield "amount",sfield "posted"])
                 )) :| [],
-        testParse "alias" [graphql|{ sales: amount }|] $
+        testParse "sub-select" [graphql|{ amount posted {timestamp, by} }|] $
+            DNExecutable (EDNOperation (ODNSelectionSet
+                (nempt [
+                    sfield "amount",
+                    Field Nothing "posted" Nothing Nothing (mnempt [
+                        sfield "timestamp",
+                        sfield "by"
+                        ])])
+                )) :| [],
+            testParse "alias" [graphql|{ sales: amount }|] $
             DNExecutable (EDNOperation (ODNSelectionSet
                 (nempt [Field (Just "sales") "amount" Nothing Nothing Nothing])
                 )) :| [],

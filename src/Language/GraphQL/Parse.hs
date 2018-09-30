@@ -90,7 +90,7 @@ selectionSet = token "{" *> ((:|) <$> selection <*> many selection) <* token "}"
 
 selection :: Parser Selection
 selection =
-        Field <$> optional alias <*> token name <*> optional arguments <*> optional directives <*> pure Nothing
+        Field <$> optional alias <*> token name <*> optional arguments <*> optional directives <*> optional selectionSet
     <|> FragmentSpread <$> (token "..." *> token name) <*> optional directives
 
 alias :: Parser Text
