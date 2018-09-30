@@ -12,7 +12,7 @@ import Language.GraphQL.Syntax
 
 document :: Parser DocumentNode
 -- document = (ignored *>token definitions)
-document = definitions
+document = ignored *> definitions
 
 definitions :: Parser (NonEmpty DefinitionNode)
 definitions = (:|) <$> definition <*> many definition

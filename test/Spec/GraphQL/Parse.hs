@@ -59,7 +59,7 @@ tests = testGroup "Parse" [
         testParse "multiple definitions" [graphql|
                 fragment Profile on User {email name}
                 {me}
-                fragment Variation on Recipe {flavor} |] $
+                fragment Variation on Recipe {flavor}|] $
             DNExecutable (EDNFragment (
                     FragmentDefinition "Profile" "User" Nothing [
                                 Field Nothing "email" Nothing Nothing Nothing,
