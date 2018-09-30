@@ -141,6 +141,7 @@ tests = testGroup "Parse" [
             testLiteral "string" "\"this is string\"" (VString "this is string"),
             testLiteral "string with spaces" "\"  this is string  \"" (VString "  this is string  "),
             testLiteral "string with escapes" "\"a \\t b\\r \\\\ s\\\"t \\f\\/\\n\\b\"" (VString "a \t b\r \\ s\"t \f/\n\b"),
+            testLiteral "string with unicode escapes ""\" \\uabcd \\u12345\"" (VString (" \xABCD \x1234" <> "5")),
             testLiteral "bool - true" "true" (VBool True),
             testLiteral "bool - false" "false" (VBool False),
             testLiteral "null" "null" VNull,

@@ -7,7 +7,7 @@ import Data.Char (isSpace, isDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
 import qualified Data.Scientific as Sci (floatingOrInteger, scientific, toBoundedInteger)
-import Data.Text (Text, append, unpack, concat)
+import Data.Text (Text, append, unpack, concat, singleton)
 import Language.GraphQL.Syntax
 
 document :: Parser DocumentNode
@@ -142,8 +142,14 @@ normalString = "\"" *> (Data.Text.concat <$> many stok) <* "\""
             <|> "f" *> pure "\f"
             <|> "t" *> pure "\t"
             <|> "\"" *> pure "\""
-            -- <|> "u" *> take 4
+            <|> "u" *> (hchar <$> Atto.take 4)
             )
+        hchar :: Text -> Text
+        hchar cs = singleton . toEnum $ foldl (\a x -> a * 16 + hv x) 0 (unpack cs)
+        hv :: Char -> Int
+        hv c    | elem c ['0'..'9'] = fromEnum c - fromEnum '0'
+                | elem c ['a' .. 'f'] = 10 + fromEnum c - fromEnum 'a'
+                | elem c ['A' .. 'F'] = 10 + fromEnum c - fromEnum 'A'
 
 
 
