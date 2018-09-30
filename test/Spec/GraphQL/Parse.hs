@@ -68,13 +68,21 @@ tests = testGroup "Parse" [
                 Field Nothing "user" Nothing (Just (Directive "final" Nothing :| [])) Nothing
             ]
             )) :| [],
+        testParse "directives - fragment" [graphql|fragment Profile on User @fast(cool: "beans") {email}|] $
+            DNExecutable (EDNFragment (
+                    FragmentDefinition "Profile" "User"
+                                (Just (Directive "fast"
+                                    (Just (Argument "cool" (VString "beans") :| [] ))
+                                :| []))
+                                [Field Nothing "email" Nothing Nothing Nothing]
+                )) :| [],
         testParse "fragments" [graphql|fragment Profile on User {email name}|] $
             DNExecutable (EDNFragment (
                     FragmentDefinition "Profile" "User" Nothing [
                                 Field Nothing "email" Nothing Nothing Nothing,
                                 Field Nothing "name" Nothing Nothing Nothing]
                 )) :| [],
-        testParse "multiple definitions" [graphql|
+            testParse "multiple definitions" [graphql|
                 fragment Profile on User {email name}
                 {me} # current user
                 # this doesn't count

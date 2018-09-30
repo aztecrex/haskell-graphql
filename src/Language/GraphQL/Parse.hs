@@ -31,7 +31,7 @@ operationDefinition =
         <|> ODNTyped <$> operationType <*> token (option Nothing (Just <$> name) ) <*> maybeVariableDefinitions <*> optional directives <*> selectionSet
 
 fragmentDefinition :: Parser FragmentDefinitionNode
-fragmentDefinition = FragmentDefinition <$> (token "fragment" *> token name) <*> (token "on" *> token name) <*> pure Nothing <*> selectionSet
+fragmentDefinition = FragmentDefinition <$> (token "fragment" *> token name) <*> (token "on" *> token name) <*> optional directives <*> selectionSet
 
 operationType :: Parser OperationType
 operationType = QUERY <$ token "query"
