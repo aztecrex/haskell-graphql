@@ -30,7 +30,7 @@ data OperationType = QUERY
     -- SUBSCRIPTION :: OperationType
     deriving (Show, Eq, Generic, Data)
 
-type SelectionSet = [Selection]
+type SelectionSet = NonEmpty Selection
 
 data Selection =
         Field (Maybe Text) Text (Maybe Arguments) (Maybe Directives) (Maybe SelectionSet)

@@ -86,7 +86,7 @@ value =
 
 
 selectionSet :: Parser SelectionSet
-selectionSet = token "{" *> many selection <* token "}"
+selectionSet = token "{" *> ((:|) <$> selection <*> many selection) <* token "}"
 
 selection :: Parser Selection
 selection = Field <$> optional alias <*> token name <*> optional arguments <*> optional directives <*> pure Nothing

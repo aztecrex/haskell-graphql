@@ -18,22 +18,20 @@ tests = testGroup "Parse" [
     testGroup "Kitchen Sink" [
         testParse "full query" [graphql|query TestQ { amount posted }|] $
             DNExecutable (EDNOperation (ODNTyped QUERY (Just "TestQ") Nothing Nothing
-                [Field Nothing "amount" Nothing Nothing Nothing,
-                 Field Nothing "posted" Nothing Nothing Nothing]
+                (nempt [Field Nothing "amount" Nothing Nothing Nothing,
+                 Field Nothing "posted" Nothing Nothing Nothing])
                  )) :| [],
         testParse "anon query" [graphql|query { amount posted }|] $
             DNExecutable (EDNOperation (ODNTyped QUERY Nothing Nothing Nothing
-                [Field Nothing "amount" Nothing Nothing Nothing,
-                Field Nothing "posted" Nothing Nothing Nothing]
+                (nempt [sfield "amount",sfield "posted"])
                 )) :| [],
         testParse "shorthand query" [graphql|{ amount posted }|] $
             DNExecutable (EDNOperation (ODNSelectionSet
-                [Field Nothing "amount" Nothing Nothing Nothing,
-                Field Nothing "posted" Nothing Nothing Nothing]
+                (nempt [sfield "amount",sfield "posted"])
                 )) :| [],
         testParse "alias" [graphql|{ sales: amount }|] $
             DNExecutable (EDNOperation (ODNSelectionSet
-                [Field (Just "sales") "amount" Nothing Nothing Nothing]
+                (nempt [Field (Just "sales") "amount" Nothing Nothing Nothing])
                 )) :| [],
             testParse "variables" [graphql|query (
                         $a: Int!
@@ -41,7 +39,7 @@ tests = testGroup "Parse" [
                         $b2: Float = 7.03
                         $z: String! = "very carefully"
                         $c: [[Bool!]!]
-                    ) {}|] $
+                    ) {user}|] $
             DNExecutable (EDNOperation (
                         ODNTyped QUERY Nothing (
                             Just (
@@ -52,25 +50,25 @@ tests = testGroup "Parse" [
                                 VariableDefinition "z"  (TNamed "String" True) (Just (VString "very carefully")),
                                 VariableDefinition "c" (TList (TList (TNamed "Bool" True) True) False) Nothing
                                 ]
-                    )) Nothing []
+                    )) Nothing (nempt [sfield "user"])
                 )) :| [],
         testParse "arguments" [graphql|{user(id:5 name: "hi")}|] $
-            DNExecutable (EDNOperation (ODNSelectionSet [
+            DNExecutable (EDNOperation (ODNSelectionSet (nempt [
                 Field Nothing "user" (Just (Argument "id" (VInt 5) :| [Argument "name" (VString "hi")])) Nothing Nothing
-            ]
+            ])
             )) :| [],
-        testParse "directives - query" [graphql|query @purple (id: 9) @rain  {}|] $
+        testParse "directives - query" [graphql|query @purple (id: 9) @rain {amount}|] $
             DNExecutable (EDNOperation (
                 ODNTyped QUERY Nothing Nothing (Just (
                     Directive "purple" (Just (Argument "id" (VInt 9) :| [] ))
                     :| [
                     Directive "rain" Nothing
-                    ])) []
+                    ])) (nempt [sfield "amount"])
             )) :| [],
         testParse "directives - field" [graphql|{user @final}|] $
-            DNExecutable (EDNOperation (ODNSelectionSet [
+            DNExecutable (EDNOperation (ODNSelectionSet (nempt [
                 Field Nothing "user" Nothing (Just (Directive "final" Nothing :| [])) Nothing
-            ]
+            ])
             )) :| [],
         testParse "directives - fragment" [graphql|fragment Profile on User @fast(cool: "beans") {email}|] $
             DNExecutable (EDNFragment (
@@ -78,13 +76,13 @@ tests = testGroup "Parse" [
                                 (Just (Directive "fast"
                                     (Just (Argument "cool" (VString "beans") :| [] ))
                                 :| []))
-                                [Field Nothing "email" Nothing Nothing Nothing]
+                                (nempt [sfield "email"])
                 )) :| [],
         testParse "fragments" [graphql|fragment Profile on User {email name}|] $
             DNExecutable (EDNFragment (
-                    FragmentDefinition "Profile" "User" Nothing [
-                                Field Nothing "email" Nothing Nothing Nothing,
-                                Field Nothing "name" Nothing Nothing Nothing]
+                    FragmentDefinition "Profile" "User" Nothing (nempt [
+                                sfield "email",
+                                sfield "name"])
                 )) :| [],
             testParse "multiple definitions" [graphql|
                 fragment Profile on User {email name}
@@ -93,16 +91,15 @@ tests = testGroup "Parse" [
                 fragment Variation on Recipe {flavor}
                 # several things|] $
             DNExecutable (EDNFragment (
-                    FragmentDefinition "Profile" "User" Nothing [
-                                Field Nothing "email" Nothing Nothing Nothing,
-                                Field Nothing "name" Nothing Nothing Nothing]
+                    FragmentDefinition "Profile" "User" Nothing (nempt [
+                                sfield "email",
+                                sfield "name"])
                 )) :| [
             DNExecutable (EDNOperation (ODNSelectionSet
-                    [Field Nothing "me" Nothing Nothing Nothing]
+                    (nempt [sfield "me"])
                 )),
             DNExecutable (EDNFragment (
-                FragmentDefinition "Variation" "Recipe" Nothing [
-                            Field Nothing "flavor" Nothing Nothing Nothing]
+                FragmentDefinition "Variation" "Recipe" Nothing (nempt [sfield "flavor"])
                 ))
                 ]
         ],
@@ -128,7 +125,7 @@ testParse name actual expected = testCase name $ actual @?= expected
 
 testLiteral :: [Char] -> Text -> Value -> TestTree
 testLiteral name lit expected = testCase name $
-                (parseOnly document ("query ($a:Int = " <> lit <> ") {}")) @?=
+                (parseOnly document ("query ($a:Int = " <> lit <> ") {q}")) @?=
                 (
                     Right (
                         (DNExecutable (
@@ -137,9 +134,19 @@ testLiteral name lit expected = testCase name $
                                     Just (
                                         (VariableDefinition "a" (TNamed "Int" False) (Just expected)) :| []
                                     )
-                                ) Nothing []
+                                ) Nothing (nempt ([sfield "q"]))
                             )
                         ) :| [])
                     )
                 )
 
+sfield :: Text -> Selection
+sfield n = Field Nothing n Nothing Nothing Nothing
+
+nempt :: [a] -> NonEmpty a
+nempt [] = undefined
+nempt (a : as) = a :| as
+
+-- mnempt :: [a] -> Maybe (NonEmpty a)
+-- mnempt [] = Nothing
+-- mnempt as = Just (nempt as)
