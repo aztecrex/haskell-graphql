@@ -119,8 +119,18 @@ tests = testGroup "Parse" [
             DNExecutable (EDNOperation (ODNSelectionSet
                 (nempt [sfield "amount",sfield "posted",
                         FragmentSpread "Door" Nothing])
+                )) :| [],
+        testParse "inline fragment" [graphql|{ amount posted ... on User {email} ... {address} }|] $
+            DNExecutable (EDNOperation (ODNSelectionSet
+                (nempt [sfield "amount",sfield "posted",
+                        InlineFragment (Just "User") Nothing (nempt [sfield "email"] ),
+                        InlineFragment Nothing Nothing (nempt [sfield "address"] )
+                    ])
                 )) :| []
-            ],
+                ],
+
+                -- InlineFragment (Maybe Text) (Maybe Directives) SelectionSet
+
         testGroup "Values" [
             testLiteral "int" "7" (VInt 7),
             testLiteral "int from" "7.000" (VInt 7),
@@ -168,3 +178,4 @@ nempt (a : as) = a :| as
 mnempt :: [a] -> Maybe (NonEmpty a)
 mnempt [] = Nothing
 mnempt as = Just (nempt as)
+

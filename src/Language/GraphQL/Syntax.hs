@@ -35,7 +35,7 @@ type SelectionSet = NonEmpty Selection
 data Selection =
         Field (Maybe Text) Text (Maybe Arguments) (Maybe Directives) (Maybe SelectionSet)
     |   FragmentSpread Text (Maybe Directives)
-    -- |   InlineFragment (Maybe TypeCondition) (Maybe Directives) SelectionSet
+    |   InlineFragment (Maybe Text) (Maybe Directives) SelectionSet
     deriving (Show, Eq, Generic, Data)
 
 type VariableDefinitions = NonEmpty VariableDefinition

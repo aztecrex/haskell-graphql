@@ -7,7 +7,7 @@ import Data.Char (isSpace, isDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
 import qualified Data.Scientific as Sci (floatingOrInteger, scientific, toBoundedInteger)
-import Data.Text (Text, append)
+import Data.Text (Text, append, unpack)
 import Language.GraphQL.Syntax
 
 document :: Parser DocumentNode
@@ -91,7 +91,8 @@ selectionSet = token "{" *> ((:|) <$> selection <*> many selection) <* token "}"
 selection :: Parser Selection
 selection =
         Field <$> optional alias <*> token name <*> optional arguments <*> optional directives <*> optional selectionSet
-    <|> FragmentSpread <$> (token "..." *> token name) <*> optional directives
+    <|> FragmentSpread <$> (token "..." *> token fragmentName) <*> optional directives
+    <|> InlineFragment <$> (token "..." *> optional (token "on" *> token fragmentName)) <*> optional directives <*> selectionSet
 
 alias :: Parser Text
 alias = token name <* token ":"
@@ -114,6 +115,14 @@ name = token $ append <$> takeWhile1 isA_z
   where
     isA_z =  inClass $ '_' : ['A'..'Z'] <> ['a'..'z']
 
+nameBut :: [Text] -> Parser Text
+nameBut disallow = do
+    v <- name
+    when (elem v disallow) $ fail ("unexpected value" ++ (unpack v))
+    pure v
+
+fragmentName :: Parser Text
+fragmentName = nameBut ["on"]
 
 token :: Parser a -> Parser a
 token t = t <* ignored
@@ -127,3 +136,6 @@ ignored =
         if (isSpace c || c == ',')
             then anyChar *> ignored
             else when (c == '#') $ manyTill anyChar (endOfLine <|> endOfInput) *> ignored
+
+
+
