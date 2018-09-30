@@ -1,6 +1,6 @@
 module Language.GraphQL.Parse (document) where
 
-import Control.Applicative ((<|>), many)
+import Control.Applicative ((<|>), many, optional)
 import Control.Monad (when)
 import Data.Attoparsec.Text as Atto
 import Data.Char (isSpace, isDigit)
@@ -91,7 +91,13 @@ selectionSet :: Parser SelectionSet
 selectionSet = token "{" *> many selection <* token "}"
 
 selection :: Parser Selection
-selection = Field <$> pure Nothing <*> token name <*> pure Nothing <*> pure Nothing <*> pure Nothing
+selection = Field <$> pure Nothing <*> token name <*> optional arguments <*> pure Nothing <*> pure Nothing
+
+arguments :: Parser Arguments
+arguments = token "(" *> ((:|) <$> argument <*> many argument) <* token ")"
+
+argument :: Parser Argument
+argument = Argument <$> token name <*> (token ":" *> token value)
 
 name :: Parser Text
 name = token $ append <$> takeWhile1 isA_z

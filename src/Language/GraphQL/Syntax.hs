@@ -72,7 +72,8 @@ type Arguments = NonEmpty Argument
 --     deriving (Show, Eq, Generic, Data)
 
 
-data Argument = A -- NYI
+data Argument =
+        Argument Text Value
     deriving (Show, Eq, Generic, Data)
 data Directives = DS -- NYI
     deriving (Show, Eq, Generic, Data)

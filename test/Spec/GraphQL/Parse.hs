@@ -50,6 +50,11 @@ tests = testGroup "Parse" [
                                 ]
                     )) Nothing []
                 )) :| [],
+        testParse "arguments" [graphql|{user(id:5 name: "hi")}|] $
+            DNExecutable (EDNOperation (ODNSelectionSet [
+                Field Nothing "user" (Just (Argument "id" (VInt 5) :| [Argument "name" (VString "hi")])) Nothing Nothing
+            ]
+            )) :| [],
         testParse "fragments" [graphql|fragment Profile on User {email name}|] $
             DNExecutable (EDNFragment (
                     FragmentDefinition "Profile" "User" Nothing [
