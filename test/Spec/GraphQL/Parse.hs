@@ -55,13 +55,18 @@ tests = testGroup "Parse" [
                 Field Nothing "user" (Just (Argument "id" (VInt 5) :| [Argument "name" (VString "hi")])) Nothing Nothing
             ]
             )) :| [],
-        testParse "arguments - query" [graphql|query @purple (id: 9) @rain  {}|] $
+        testParse "directives - query" [graphql|query @purple (id: 9) @rain  {}|] $
             DNExecutable (EDNOperation (
                 ODNTyped QUERY Nothing Nothing (Just (
                     Directive "purple" (Just (Argument "id" (VInt 9) :| [] ))
                     :| [
                     Directive "rain" Nothing
                     ])) []
+            )) :| [],
+        testParse "directives - field" [graphql|{user @final}|] $
+            DNExecutable (EDNOperation (ODNSelectionSet [
+                Field Nothing "user" Nothing (Just (Directive "final" Nothing :| [])) Nothing
+            ]
             )) :| [],
         testParse "fragments" [graphql|fragment Profile on User {email name}|] $
             DNExecutable (EDNFragment (
