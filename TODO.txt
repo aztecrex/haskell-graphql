@@ -1,7 +1,7 @@
 block quoted literals
-single quoted literals must not span line
-string escapes
+unicode character value escapes
 variable value (and generally, how to deal "const" contexts)
+enum value should reject "null", "true", "false"
 
 mutation
 

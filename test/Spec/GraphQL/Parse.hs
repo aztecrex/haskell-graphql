@@ -4,7 +4,8 @@ module Spec.GraphQL.Parse (tests) where
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
 
-import Data.Attoparsec.Text (parseOnly)
+import Data.Attoparsec.Text (parseOnly, Parser)
+import Data.Either (isLeft)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
 import Data.Text (Text)
@@ -126,7 +127,8 @@ tests = testGroup "Parse" [
                         InlineFragment (Just "User") Nothing (nempt [sfield "email"] ),
                         InlineFragment Nothing Nothing (nempt [sfield "address"] )
                     ])
-                )) :| []
+                )) :| [],
+        testParseFail "newlines disallowed" "query ($a:Int = \"no line\nterm\") {email}"
                 ],
 
                 -- InlineFragment (Maybe Text) (Maybe Directives) SelectionSet
@@ -138,6 +140,7 @@ tests = testGroup "Parse" [
             testLiteral "float e" "-112.3e-4" (VFloat (-112.3e-4)),
             testLiteral "string" "\"this is string\"" (VString "this is string"),
             testLiteral "string with spaces" "\"  this is string  \"" (VString "  this is string  "),
+            testLiteral "string with escapes" "\"a \\t b\\r \\\\ s\\\"t \\f\\/\\n\\b\"" (VString "a \t b\r \\ s\"t \f/\n\b"),
             testLiteral "bool - true" "true" (VBool True),
             testLiteral "bool - false" "false" (VBool False),
             testLiteral "null" "null" VNull,
@@ -147,6 +150,10 @@ tests = testGroup "Parse" [
             testLiteral "object" "{ birthday : \"happy\", age: 3}" (VObject [("birthday", VString "happy"), ("age", VInt 3)])
             ]
     ]
+
+testParseFail :: [Char] -> Text -> TestTree
+testParseFail name invalid = testCase name $
+    isLeft (parseOnly document invalid) @?= True
 
 testParse :: [Char] -> DocumentNode -> DocumentNode -> TestTree
 testParse name actual expected = testCase name $ actual @?= expected

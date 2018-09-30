@@ -7,7 +7,7 @@ import Data.Char (isSpace, isDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
 import qualified Data.Scientific as Sci (floatingOrInteger, scientific, toBoundedInteger)
-import Data.Text (Text, append, unpack)
+import Data.Text (Text, append, unpack, concat)
 import Language.GraphQL.Syntax
 
 document :: Parser DocumentNode
@@ -65,7 +65,7 @@ vdefault = token "=" *> token value
 value :: Parser Value
 value =
             numv
-        <|> VString <$> token ("\"" *> Atto.takeWhile (/= '"') <* "\"" )
+        <|> VString <$> token normalString
         <|> VBool <$ token "true" <*> pure True
         <|> VBool <$ token "false" <*> pure False
         <|> VNull <$ token "null"
@@ -126,6 +126,25 @@ fragmentName = nameBut ["on"]
 
 token :: Parser a -> Parser a
 token t = t <* ignored
+
+normalString :: Parser Text
+normalString = "\"" *> (Data.Text.concat <$> many stok) <* "\""
+    where
+        stok = schars <|> escape
+        schars = Atto.takeWhile1 schar
+        schar c = c >= '\x0009' && (not (elem c ("\\\n\r\"" :: [Char])))
+        escape = "\\" *> (
+                "b" *> pure "\b"
+            <|> "\\" *> pure "\\"
+            <|> "n" *> pure "\n"
+            <|> "r" *> pure "\r"
+            <|> "/" *> pure "/"
+            <|> "f" *> pure "\f"
+            <|> "t" *> pure "\t"
+            <|> "\"" *> pure "\""
+            -- <|> "u" *> take 4
+            )
+
 
 
 ignored :: Parser ()
