@@ -49,6 +49,12 @@ tests = testGroup "Parse" [
                                 VariableDefinition "c" (TList (TList (TNamed "Bool" True) True) False) Nothing
                                 ]
                     )) Nothing []
+                )) :| [],
+        testParse "fragments" [graphql|fragment Profile on User {email name}|] $
+            DNExecutable (EDNFragment (
+                    FragmentDefinition "Profile" "User" Nothing [
+                                Field Nothing "email" Nothing Nothing Nothing,
+                                Field Nothing "name" Nothing Nothing Nothing]
                 )) :| []
             ],
         testGroup "Values" [

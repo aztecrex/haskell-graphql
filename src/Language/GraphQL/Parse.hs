@@ -15,18 +15,24 @@ document :: Parser DocumentNode
 document = definitions
 
 definitions :: Parser (NonEmpty DefinitionNode)
-definitions = (:|) <$> definition <*> pure []
+definitions = (:|) <$> definition <*> many definition
 
 definition :: Parser DefinitionNode
-definition = DNExecutable <$> executableDefinition
+definition = DNExecutable <$> token executableDefinition
 
 executableDefinition :: Parser ExecutableDefinitionNode
-executableDefinition = EDNOperation <$> operationDefinition -- <$> opDef
+executableDefinition =
+        EDNOperation <$> operationDefinition
+    <|> EDNFragment <$> fragmentDefinition
+
 
 operationDefinition :: Parser OperationDefinitionNode
 operationDefinition =
             ODNSelectionSet <$> selectionSet
         <|> ODNTyped <$> operationType <*> token (option Nothing (Just <$> name) ) <*> maybeVariableDefinitions <*> pure Nothing <*> selectionSet
+
+fragmentDefinition :: Parser FragmentDefinitionNode
+fragmentDefinition = FragmentDefinition <$> (token "fragment" *> token name) <*> (token "on" *> token name) <*> pure Nothing <*> selectionSet
 
 operationType :: Parser OperationType
 operationType = QUERY <$ token "query"

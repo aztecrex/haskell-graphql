@@ -53,8 +53,7 @@ data Type =
     deriving (Show, Eq, Generic, Data)
 
 data Value =
-        V -- temp, delete
-    |   VVariable Text
+        VVariable Text
     |   VInt Int  -- 32 bits precision per GQL spec
     |   VFloat Double -- 64 bits precision per GQL spec
     |   VString Text
@@ -65,13 +64,16 @@ data Value =
     |   VObject[(Text, Value)]
     deriving (Show, Eq, Generic, Data)
 
+data FragmentDefinitionNode =
+        FDN -- temp, delete
+    |   FragmentDefinition Text Text (Maybe Directives) SelectionSet
+    deriving (Show, Eq, Generic, Data)
+
 data Arguments = AS -- NYI
     deriving (Show, Eq, Generic, Data)
 data Directives = DS -- NYI
     deriving (Show, Eq, Generic, Data)
 
-data FragmentDefinitionNode = FDN -- NYI
-    deriving (Show, Eq, Generic, Data)
 
 data TypeSystemDefinitionNode = TSDN -- NYI
     deriving (Show, Eq, Generic, Data)
