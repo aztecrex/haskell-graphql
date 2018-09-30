@@ -67,15 +67,14 @@ data FragmentDefinitionNode =
 
 type Arguments = NonEmpty Argument
 
--- data Argument where
---     Argument :: Text -> Value -> Argument
---     deriving (Show, Eq, Generic, Data)
-
-
 data Argument =
         Argument Text Value
     deriving (Show, Eq, Generic, Data)
-data Directives = DS -- NYI
+
+type Directives = NonEmpty Directive
+
+data Directive =
+        Directive Text (Maybe Arguments)
     deriving (Show, Eq, Generic, Data)
 
 

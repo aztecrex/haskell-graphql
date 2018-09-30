@@ -28,7 +28,7 @@ executableDefinition =
 operationDefinition :: Parser OperationDefinitionNode
 operationDefinition =
             ODNSelectionSet <$> selectionSet
-        <|> ODNTyped <$> operationType <*> token (option Nothing (Just <$> name) ) <*> maybeVariableDefinitions <*> pure Nothing <*> selectionSet
+        <|> ODNTyped <$> operationType <*> token (option Nothing (Just <$> name) ) <*> maybeVariableDefinitions <*> optional directives <*> selectionSet
 
 fragmentDefinition :: Parser FragmentDefinitionNode
 fragmentDefinition = FragmentDefinition <$> (token "fragment" *> token name) <*> (token "on" *> token name) <*> pure Nothing <*> selectionSet
@@ -57,8 +57,6 @@ type_ =
     <|> TNamed <$> token name <*> pure False
     <|> TList <$> (token "[" *> token type_ <* token "]!") <*> pure True
     <|> TList <$> (token "[" *> token type_ <* token "]") <*> pure False
-
-    -- T <$ token ( "Int!" <|> "Int" )
 
 vdefault :: Parser Value
 vdefault = token "=" *> token value
@@ -98,6 +96,12 @@ arguments = token "(" *> ((:|) <$> argument <*> many argument) <* token ")"
 
 argument :: Parser Argument
 argument = Argument <$> token name <*> (token ":" *> token value)
+
+directives :: Parser Directives
+directives = (:|) <$> directive <*> many directive
+
+directive :: Parser Directive
+directive = Directive <$> ("@" *> token name) <*> optional arguments
 
 name :: Parser Text
 name = token $ append <$> takeWhile1 isA_z
