@@ -78,7 +78,11 @@ tests = testGroup "Parse" [
                                 :| []))
                                 (nempt [sfield "email"])
                 )) :| [],
-        testParse "fragments" [graphql|fragment Profile on User {email name}|] $
+        testParse "directives - fragment spread" [graphql|{  ... Door @hollow }|] $
+            DNExecutable (EDNOperation (ODNSelectionSet
+                (nempt [FragmentSpread "Door" (mnempt [Directive "hollow" Nothing])])
+                )) :| [],
+            testParse "fragments" [graphql|fragment Profile on User {email name}|] $
             DNExecutable (EDNFragment (
                     FragmentDefinition "Profile" "User" Nothing (nempt [
                                 sfield "email",
@@ -152,6 +156,6 @@ nempt :: [a] -> NonEmpty a
 nempt [] = undefined
 nempt (a : as) = a :| as
 
--- mnempt :: [a] -> Maybe (NonEmpty a)
--- mnempt [] = Nothing
--- mnempt as = Just (nempt as)
+mnempt :: [a] -> Maybe (NonEmpty a)
+mnempt [] = Nothing
+mnempt as = Just (nempt as)
