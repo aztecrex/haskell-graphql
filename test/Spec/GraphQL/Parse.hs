@@ -55,8 +55,25 @@ tests = testGroup "Parse" [
                     FragmentDefinition "Profile" "User" Nothing [
                                 Field Nothing "email" Nothing Nothing Nothing,
                                 Field Nothing "name" Nothing Nothing Nothing]
-                )) :| []
-            ],
+                )) :| [],
+        testParse "multiple definitions" [graphql|
+                fragment Profile on User {email name}
+                {me}
+                fragment Variation on Recipe {flavor} |] $
+            DNExecutable (EDNFragment (
+                    FragmentDefinition "Profile" "User" Nothing [
+                                Field Nothing "email" Nothing Nothing Nothing,
+                                Field Nothing "name" Nothing Nothing Nothing]
+                )) :| [
+            DNExecutable (EDNOperation (ODNSelectionSet
+                    [Field Nothing "me" Nothing Nothing Nothing]
+                )),
+            DNExecutable (EDNFragment (
+                FragmentDefinition "Variation" "Recipe" Nothing [
+                            Field Nothing "flavor" Nothing Nothing Nothing]
+                ))
+                ]
+        ],
         testGroup "Values" [
             testLiteral "int" "7" (VInt 7),
             testLiteral "int from" "7.000" (VInt 7),
@@ -94,4 +111,3 @@ testLiteral name lit expected = testCase name $
                     )
                 )
 
--- Field (Maybe Text) Text (Maybe Arguments) (Maybe Directives) (Maybe SelectionSet)

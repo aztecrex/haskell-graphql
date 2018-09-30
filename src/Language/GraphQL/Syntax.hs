@@ -8,7 +8,6 @@ import Data.List.NonEmpty (NonEmpty)
 import Data.Text (Text)
 import GHC.Generics
 
-
 type DocumentNode = NonEmpty DefinitionNode
 
 data DefinitionNode =
@@ -16,7 +15,6 @@ data DefinitionNode =
     |   DNTypeSystem TypeSystemDefinitionNode
     |   DNTypeSystemExtension TypeSystemDefinitionExtensionNode
         deriving (Show, Eq, Generic, Data)
-
 
 data ExecutableDefinitionNode =
         EDNOperation OperationDefinitionNode
