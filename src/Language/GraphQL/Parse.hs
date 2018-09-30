@@ -1,4 +1,4 @@
-module Language.GraphQL.Parse where
+module Language.GraphQL.Parse (document) where
 
 import Control.Applicative ((<|>), many)
 import Control.Monad (when)
@@ -11,7 +11,6 @@ import Data.Text (Text, append)
 import Language.GraphQL.Syntax
 
 document :: Parser DocumentNode
--- document = (ignored *>token definitions)
 document = ignored *> definitions
 
 definitions :: Parser (NonEmpty DefinitionNode)
@@ -110,6 +109,6 @@ ignored =
     endOfInput <|>
     do
         c <- peekChar'
-        if (isSpace c || c == ',') -- this should be OK, spec has weird def of newline
+        if (isSpace c || c == ',')
             then anyChar *> ignored
             else when (c == '#') $ manyTill anyChar (endOfLine <|> endOfInput) *> ignored

@@ -3,7 +3,6 @@ module Language.GraphQL.Syntax where
 
 --
 import Data.Data (Data)
-import Data.Int (Int32)
 import Data.List.NonEmpty (NonEmpty)
 import Data.Text (Text)
 import GHC.Generics
@@ -63,8 +62,7 @@ data Value =
     deriving (Show, Eq, Generic, Data)
 
 data FragmentDefinitionNode =
-        FDN -- temp, delete
-    |   FragmentDefinition Text Text (Maybe Directives) SelectionSet
+        FragmentDefinition Text Text (Maybe Directives) SelectionSet
     deriving (Show, Eq, Generic, Data)
 
 data Arguments = AS -- NYI
