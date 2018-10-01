@@ -27,13 +27,24 @@ executableDefinition =
     <|> EDNFragment <$> fragmentDefinition
 
 typeSystemDefinition :: Parser TypeSystemDefinitionNode
-typeSystemDefinition = TSDNRoots <$> (token "schema" *> token rootOperationTypes)
+typeSystemDefinition =
+        TSDNRoots <$> (token "schema" *> token rootOperationTypes)
+    <|> TSDNDirective <$> directiveDefinition
+
+
+directiveDefinition :: Parser DirectiveDefinitionNode
+directiveDefinition = DDN <$ token "directive" <* (token "@" *> token name) <* (token "on" *> directiveLocation)
+
+directiveLocation :: Parser Text
+directiveLocation = token "QUERY"
 
 rootOperationTypes :: Parser RootOperationTypeDefinitionsNode
 rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (token rootOperationType))
 
 rootOperationType :: Parser RootOperationTypeDefinitionNode
 rootOperationType = ROTDNDefinition <$> token operationType <*> (token ":" *> token name )
+
+
 
 operationDefinition :: Parser OperationDefinitionNode
 operationDefinition =

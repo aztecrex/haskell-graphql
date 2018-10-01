@@ -148,16 +148,19 @@ tests = testGroup "Parse" [
                 )) :| [],
         testParseFail "newlines disallowed in normal string" "query ($a:Int = \"no line\nterm\") {email}",
         testParse "schema definition" [graphql|schema {
-                                            query: TQuery
-                                            mutation: TMutation
-                                            subscription: TSubscription
-                                }|] $ nempt [DNTypeSystem (
-                                    TSDNRoots (nempt [
-                                        ROTDNDefinition QUERY "TQuery",
-                                        ROTDNDefinition MUTATION "TMutation",
-                                        ROTDNDefinition SUBSCRIPTION "TSubscription"])
-                                )]
-                ],
+                                                query: TQuery
+                                                mutation: TMutation
+                                                subscription: TSubscription
+                                        }|] $
+                    nempt [DNTypeSystem (
+                        TSDNRoots (nempt [
+                            ROTDNDefinition QUERY "TQuery",
+                            ROTDNDefinition MUTATION "TMutation",
+                            ROTDNDefinition SUBSCRIPTION "TSubscription"])
+                    )],
+        testParse "directive definition" [graphql|directive @big on QUERY|] $
+                    nempt [DNTypeSystem (TSDNDirective DDN)]
+        ],
         testGroup "Values" [
             testValue "int" "7" (VInt 7),
             testValue "int from" "7.000" (VInt 7),
