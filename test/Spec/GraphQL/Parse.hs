@@ -159,7 +159,7 @@ tests = testGroup "Parse" [
                             ROTDNDefinition SUBSCRIPTION "TSubscription"])
                     )],
         testParse "directive definition" [graphql|directive @big on QUERY|] $
-                    nempt [DNTypeSystem (TSDNDirective DDN)]
+                    nempt [DNTypeSystem (TSDNDirective (DDNDefinition "big" Nothing DL_QUERY))]
         ],
         testGroup "Values" [
             testValue "int" "7" (VInt 7),

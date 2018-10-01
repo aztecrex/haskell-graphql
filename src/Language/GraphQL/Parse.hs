@@ -33,10 +33,11 @@ typeSystemDefinition =
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode
-directiveDefinition = DDN <$ token "directive" <* (token "@" *> token name) <* (token "on" *> directiveLocation)
+directiveDefinition = DDNDefinition <$> (token "directive" *> token "@" *> token name) <*> pure Nothing <*> (token "on" *> token directiveLocation)
 
-directiveLocation :: Parser Text
-directiveLocation = token "QUERY"
+directiveLocation :: Parser DirectiveLocation
+directiveLocation =
+    token "QUERY" *> pure DL_QUERY
 
 rootOperationTypes :: Parser RootOperationTypeDefinitionsNode
 rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (token rootOperationType))
