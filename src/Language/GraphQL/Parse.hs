@@ -7,7 +7,7 @@ import Data.Char (isSpace, isDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
 import qualified Data.Scientific as Sci (floatingOrInteger, scientific, toBoundedInteger)
-import Data.Text (Text, append, unpack, concat, singleton, lines, length, takeWhile, intercalate, drop)
+import Data.Text as T (Text, append, unpack, concat, singleton, lines, length, takeWhile, intercalate, drop, all)
 import Language.GraphQL.Syntax
 
 document :: Parser DocumentNode
@@ -130,7 +130,7 @@ token t = t <* ignored
 
 
 blockString :: Parser Text
-blockString = "\"\"\"" *> (fixup . Data.Text.concat <$> many stok) <* "\"\"\""
+blockString = "\"\"\"" *> ((fixup . T.concat)<$> many stok) <* "\"\"\""
     where
         stok = schars <|> check
         schars = Atto.takeWhile1 (\c -> c >= '\x0009' && c /= '\\' && c /= '\"')
@@ -138,13 +138,20 @@ blockString = "\"\"\"" *> (fixup . Data.Text.concat <$> many stok) <* "\"\"\""
                 "\\\"\"\"" *> pure "\"\"\""
             <|> "\\"
         fixup v =
-            let ls = Data.Text.lines v
-                burn = foldl (\a x -> min a (Data.Text.length(Data.Text.takeWhile isSpace x))) (maxBound::Int) ls
-            in Data.Text.intercalate "\n" (Data.Text.drop burn <$> ls)
+            let ls = T.lines v
+                burn = foldl indent (maxBound::Int) ls
+                indent a x =
+                    let spaces = T.length . T.takeWhile isSpace $ x
+                    in if spaces == T.length x then a else min a spaces
+                indented = T.drop burn <$> ls
+                rtrimmed = reverse . dropWhile blank . reverse $ indented
+                ltrimmed = dropWhile blank rtrimmed
+                blank = T.all isSpace
+            in T.intercalate "\n" ltrimmed
 
 
 normalString :: Parser Text
-normalString = "\"" *> (Data.Text.concat <$> many stok)  <* "\""
+normalString = "\"" *> (T.concat <$> many stok)  <* "\""
     where
         stok = schars <|> escape
         schars = Atto.takeWhile1 schar
@@ -177,7 +184,6 @@ ignored =
         if (isSpace c || c == ',')
             then anyChar *> ignored
             else when (c == '#') $ manyTill anyChar (endOfLine <|> endOfInput) *> ignored
-
 
 
 

@@ -142,7 +142,7 @@ tests = testGroup "Parse" [
             testLiteral "string with spaces" "\"  this is string  \"" (VString "  this is string  "),
             testLiteral "string with escapes" "\"a \\t b\\r \\\\ s\\\"t \\f\\/\\n\\b\"" (VString "a \t b\r \\ s\"t \f/\n\b"),
             testLiteral "string with unicode escapes ""\" \\uabcd \\u12345\"" (VString (" \xABCD \x1234" <> "5")),
-            testLiteral "block quote string indent" "\"\"\" this is\n   indented\n somewhat\\\"\"\"\"\"\"" (VString ("this is\n  indented\nsomewhat\"\"\"")),
+            testLiteral "block quote string indent" "\"\"\" \n \n this is\n   indented\n somewhat\\\"\"\"\n\n \n   \"\"\"" (VString ("this is\n  indented\nsomewhat\"\"\"")),
             testLiteral "bool - true" "true" (VBool True),
             testLiteral "bool - false" "false" (VBool False),
             testLiteral "null" "null" VNull,
