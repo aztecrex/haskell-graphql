@@ -30,6 +30,15 @@ tests = testGroup "Parse" [
             DNExecutable (EDNOperation (ODNSelectionSet
                 (nempt [sfield "amount",sfield "posted"])
                 )) :| [],
+        testParse "full mutation" [graphql|mutation TestQ { amount posted }|] $
+            DNExecutable (EDNOperation (ODNTyped MUTATION (Just "TestQ") Nothing Nothing
+                (nempt [Field Nothing "amount" Nothing Nothing Nothing,
+                    Field Nothing "posted" Nothing Nothing Nothing])
+                    )) :| [],
+        testParse "anon mutation" [graphql|mutation { amount posted }|] $
+            DNExecutable (EDNOperation (ODNTyped MUTATION Nothing Nothing Nothing
+                (nempt [sfield "amount",sfield "posted"])
+                )) :| [],
         testParse "sub-select" [graphql|{ amount posted {timestamp, by} }|] $
             DNExecutable (EDNOperation (ODNSelectionSet
                 (nempt [

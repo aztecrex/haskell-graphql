@@ -25,8 +25,7 @@ data OperationDefinitionNode =
     |   ODNTyped OperationType (Maybe Text) (Maybe VariableDefinitions) (Maybe Directives) SelectionSet
     deriving (Show, Eq, Generic, Data)
 
-data OperationType = QUERY
-    -- MUTATION :: OperationType
+data OperationType = QUERY | MUTATION
     -- SUBSCRIPTION :: OperationType
     deriving (Show, Eq, Generic, Data)
 
