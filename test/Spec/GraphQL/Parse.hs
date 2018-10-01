@@ -146,11 +146,13 @@ tests = testGroup "Parse" [
                         InlineFragment Nothing Nothing (nempt [sfield "address"] )
                     ])
                 )) :| [],
-        testParseFail "newlines disallowed" "query ($a:Int = \"no line\nterm\") {email}"
+        testParseFail "newlines disallowed in normal string" "query ($a:Int = \"no line\nterm\") {email}"
                 ],
-
-                -- InlineFragment (Maybe Text) (Maybe Directives) SelectionSet
-
+        testParse "type system definition" [graphql|schema {
+                                                        query: TQuery
+                                                        mutation: TMutation
+                                                        subscription: TSubscription
+                                            }|] $ nempt [DNTypeSystem TSDN],
         testGroup "Values" [
             testValue "int" "7" (VInt 7),
             testValue "int from" "7.000" (VInt 7),

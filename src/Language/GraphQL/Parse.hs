@@ -17,13 +17,23 @@ definitions :: Parser (NonEmpty DefinitionNode)
 definitions = (:|) <$> definition <*> many definition
 
 definition :: Parser DefinitionNode
-definition = DNExecutable <$> token executableDefinition
+definition =
+        DNExecutable <$> token executableDefinition
+    <|> DNTypeSystem <$> token typeSystemDefinition
 
 executableDefinition :: Parser ExecutableDefinitionNode
 executableDefinition =
         EDNOperation <$> operationDefinition
     <|> EDNFragment <$> fragmentDefinition
 
+typeSystemDefinition :: Parser TypeSystemDefinitionNode
+typeSystemDefinition = TSDN <$ (token "schema" *> token rootOperationTypes)
+
+rootOperationTypes :: Parser RootOperationTypeDefinitionsNode
+rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (token rootOperationType))
+
+rootOperationType :: Parser RootOperationTypeDefinitionNode
+rootOperationType = ROTDN <$ (token operationType <* token ":" <* token name )
 
 operationDefinition :: Parser OperationDefinitionNode
 operationDefinition =
