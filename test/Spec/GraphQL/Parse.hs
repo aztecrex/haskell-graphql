@@ -152,7 +152,9 @@ tests = testGroup "Parse" [
                                                         query: TQuery
                                                         mutation: TMutation
                                                         subscription: TSubscription
-                                            }|] $ nempt [DNTypeSystem TSDN],
+                                            }|] $ nempt [DNTypeSystem (
+                                                TSDNRoots (nempt [ROTDN, ROTDN, ROTDN])
+                                            )],
         testGroup "Values" [
             testValue "int" "7" (VInt 7),
             testValue "int from" "7.000" (VInt 7),

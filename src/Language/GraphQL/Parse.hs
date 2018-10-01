@@ -27,7 +27,7 @@ executableDefinition =
     <|> EDNFragment <$> fragmentDefinition
 
 typeSystemDefinition :: Parser TypeSystemDefinitionNode
-typeSystemDefinition = TSDN <$ (token "schema" *> token rootOperationTypes)
+typeSystemDefinition = TSDNRoots <$> (token "schema" *> token rootOperationTypes)
 
 rootOperationTypes :: Parser RootOperationTypeDefinitionsNode
 rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (token rootOperationType))
