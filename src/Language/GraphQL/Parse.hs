@@ -37,7 +37,8 @@ operationType :: Parser OperationType
 operationType =
         QUERY <$ token "query"
     <|> MUTATION <$ token "mutation"
--- opType = QUERY <$ "query" <|> MUTATION <$ "mutation" <|> SUBSCRIPTION <$ "subscription"
+    <|> SUBSCRIPTION <$ token "subscription"
+        -- opType = QUERY <$ "query" <|> MUTATION <$ "mutation" <|> SUBSCRIPTION <$ "subscription"
 
 maybeVariableDefinitions :: Parser (Maybe VariableDefinitions)
 maybeVariableDefinitions =
