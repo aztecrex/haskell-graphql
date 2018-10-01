@@ -33,7 +33,7 @@ rootOperationTypes :: Parser RootOperationTypeDefinitionsNode
 rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (token rootOperationType))
 
 rootOperationType :: Parser RootOperationTypeDefinitionNode
-rootOperationType = ROTDN <$ (token operationType <* token ":" <* token name )
+rootOperationType = ROTDNDefinition <$> token operationType <*> (token ":" *> token name )
 
 operationDefinition :: Parser OperationDefinitionNode
 operationDefinition =
