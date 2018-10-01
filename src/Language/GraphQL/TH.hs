@@ -8,9 +8,8 @@ import Data.Text (pack, unpack, Text)
 import Data.Typeable (cast)
 import Language.GraphQL.Parse (document)
 import Language.Haskell.TH.Quote (QuasiQuoter(..), dataToExpQ)
-import Language.Haskell.TH.Syntax (liftData, lift)
+import Language.Haskell.TH.Syntax (lift)
 import Language.Haskell.TH (Exp(AppE, VarE), Q)
-
 
 graphql :: QuasiQuoter
 graphql = QuasiQuoter {
@@ -20,14 +19,12 @@ graphql = QuasiQuoter {
     quoteDec  = undefined
     }
 
-
 parsed :: String -> Q Exp
 parsed ssrc = do
     let src = pack ssrc
     case parseOnly document src of
         Left err -> fail err
         Right doc -> liftWithText doc
-
 
 liftWithText :: Data a => a -> Q Exp
 liftWithText = dataToExpQ(\a -> liftText <$> cast a)

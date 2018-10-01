@@ -1,0 +1,17 @@
+how should we deal with "const" contexts?
+  - in the parser?
+  - int the AST validation
+
+
+
+mutation
+
+subscription
+
+
+type system defs
+
+type system extensions
+
+
+

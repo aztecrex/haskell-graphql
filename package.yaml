@@ -14,6 +14,7 @@ description: See README.md on GitHub at <https://github.com/aztecrex/haskell-gra
 dependencies:
   - base >= 4.7 && < 5
   - attoparsec
+  - scientific
   - template-haskell
   - text
   - unordered-containers
