@@ -4,7 +4,9 @@
 
 ## Status
 
-The parser can handle executable definitions. Current work is on type system definitions.
+- The parser can handle executable definitions.
+
+Current work is on type system definitions.
 
 ## Design
 
