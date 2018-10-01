@@ -1,17 +1,11 @@
+wip: type system defs
+ - implement directive definition arguments
+ - implement rest of directive locations
+ - implement the rest of type system defs
+
 how should we deal with "const" contexts?
   - in the parser?
   - int the AST validation
 
-
-
-mutation
-
-subscription
-
-
-type system defs
-
 type system extensions
-
-
 
