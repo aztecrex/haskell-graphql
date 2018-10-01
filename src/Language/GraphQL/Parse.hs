@@ -34,7 +34,9 @@ fragmentDefinition :: Parser FragmentDefinitionNode
 fragmentDefinition = FragmentDefinition <$> (token "fragment" *> token name) <*> (token "on" *> token name) <*> optional directives <*> selectionSet
 
 operationType :: Parser OperationType
-operationType = QUERY <$ token "query"
+operationType =
+        QUERY <$ token "query"
+    <|> MUTATION <$ token "mutation"
 -- opType = QUERY <$ "query" <|> MUTATION <$ "mutation" <|> SUBSCRIPTION <$ "subscription"
 
 maybeVariableDefinitions :: Parser (Maybe VariableDefinitions)
