@@ -70,7 +70,7 @@ value =
         <|> VBool <$ token "true" <*> pure True
         <|> VBool <$ token "false" <*> pure False
         <|> VNull <$ token "null"
-        <|> VEnum <$> name
+        <|> VEnum <$> name -- order important, this tried after bool and null
         <|> VList <$> (token "[" *> many (token value) <* token "]")
         <|> VObject <$> (token "{" *> many entry <* token "}")
     where

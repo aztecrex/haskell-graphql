@@ -1,5 +1,4 @@
 variable value (and generally, how to deal "const" contexts)
-enum value should reject "null", "true", "false"
 
 mutation
 
