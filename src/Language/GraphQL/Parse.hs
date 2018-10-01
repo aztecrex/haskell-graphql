@@ -7,7 +7,7 @@ import Data.Char (isSpace, isDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
 import qualified Data.Scientific as Sci (floatingOrInteger, scientific, toBoundedInteger)
-import Data.Text (Text, append, unpack, concat, singleton)
+import Data.Text (Text, append, unpack, concat, singleton, lines, length, takeWhile, unlines, drop)
 import Language.GraphQL.Syntax
 
 document :: Parser DocumentNode
@@ -65,6 +65,7 @@ vdefault = token "=" *> token value
 value :: Parser Value
 value =
             numv
+        <|> VString <$> token blockString
         <|> VString <$> token normalString
         <|> VBool <$ token "true" <*> pure True
         <|> VBool <$ token "false" <*> pure False
@@ -127,8 +128,23 @@ fragmentName = nameBut ["on"]
 token :: Parser a -> Parser a
 token t = t <* ignored
 
+
+blockString :: Parser Text
+blockString = "\"\"\"" *> (fixup . Data.Text.concat <$> many stok) <* "\"\"\""
+    where
+        stok = schars <|> check
+        schars = Atto.takeWhile1 (\c -> c >= '\x0009' && c /= '\\' && c /= '\"')
+        check =
+                "\\\"\"\"" *> pure "\"\"\""
+            <|> "\\"
+        fixup v =
+            let ls = Data.Text.lines v
+                burn = foldl (\a x -> min a (Data.Text.length(Data.Text.takeWhile isSpace x))) (maxBound::Int) ls
+            in Data.Text.unlines (Data.Text.drop burn <$> ls)
+
+
 normalString :: Parser Text
-normalString = "\"" *> (Data.Text.concat <$> many stok) <* "\""
+normalString = "\"" *> (Data.Text.concat <$> many stok)  <* "\""
     where
         stok = schars <|> escape
         schars = Atto.takeWhile1 schar
@@ -161,6 +177,7 @@ ignored =
         if (isSpace c || c == ',')
             then anyChar *> ignored
             else when (c == '#') $ manyTill anyChar (endOfLine <|> endOfInput) *> ignored
+
 
 
 
