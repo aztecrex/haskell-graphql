@@ -7,7 +7,7 @@ import Data.Char (isSpace, isDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
 import qualified Data.Scientific as Sci (floatingOrInteger, scientific, toBoundedInteger)
-import Data.Text (Text, append, unpack, concat, singleton, lines, length, takeWhile, unlines, drop)
+import Data.Text (Text, append, unpack, concat, singleton, lines, length, takeWhile, intercalate, drop)
 import Language.GraphQL.Syntax
 
 document :: Parser DocumentNode
@@ -140,7 +140,7 @@ blockString = "\"\"\"" *> (fixup . Data.Text.concat <$> many stok) <* "\"\"\""
         fixup v =
             let ls = Data.Text.lines v
                 burn = foldl (\a x -> min a (Data.Text.length(Data.Text.takeWhile isSpace x))) (maxBound::Int) ls
-            in Data.Text.unlines (Data.Text.drop burn <$> ls)
+            in Data.Text.intercalate "\n" (Data.Text.drop burn <$> ls)
 
 
 normalString :: Parser Text
