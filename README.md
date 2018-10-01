@@ -41,3 +41,10 @@ The unparse function(s) will be capable of converting an ST into a form that can
 common tools such as [Graphiql](https://github.com/graphql/graphiql).
 
 
+## Build
+
+The project uses the [Haskell Stack](https://docs.haskellstack.org/en/stable/README/). If you don't
+have it, use the instructions on the site. Once you have `stack` installed:
+- `stack build` to build the project
+- `stack test` to run the tests
+
