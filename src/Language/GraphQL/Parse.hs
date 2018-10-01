@@ -44,8 +44,6 @@ rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (to
 rootOperationType :: Parser RootOperationTypeDefinitionNode
 rootOperationType = ROTDNDefinition <$> token operationType <*> (token ":" *> token name )
 
-
-
 operationDefinition :: Parser OperationDefinitionNode
 operationDefinition =
             ODNSelectionSet <$> selectionSet
@@ -190,16 +188,16 @@ normalString = "\"" *> (T.concat <$> many stok)  <* "\""
             <|> "f" *> pure "\f"
             <|> "t" *> pure "\t"
             <|> "\"" *> pure "\""
-            <|> "u" *> (hchar <$> Atto.take 4)
+            <|> "u" *> (hchar <$> (Atto.take 4 >>= validHex))
             )
-        hchar :: Text -> Text
         hchar cs = singleton . toEnum $ foldl (\a x -> a * 16 + hv x) 0 (unpack cs)
-        hv :: Char -> Int
         hv c    | elem c ['0'..'9'] = fromEnum c - fromEnum '0'
                 | elem c ['a' .. 'f'] = 10 + fromEnum c - fromEnum 'a'
                 | elem c ['A' .. 'F'] = 10 + fromEnum c - fromEnum 'A'
-
-
+                | otherwise = undefined -- do not let this happen
+        validHex :: Text -> Parser Text
+        validHex v = if T.all (flip elem hex) v then pure v else fail "not valid hex"
+        hex = ['a'..'f'] <> ['A'..'F'] <> ['0'..'9']
 
 ignored :: Parser ()
 ignored =
