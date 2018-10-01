@@ -4,7 +4,7 @@
 
 ## Status
 
-The parser can handle queries. Current work is on mutation.
+The parser can handle queries and mutations. Current work is on subscriptions.
 
 ## Design
 
