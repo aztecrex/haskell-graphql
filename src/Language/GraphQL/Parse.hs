@@ -73,6 +73,7 @@ value =
         <|> VEnum <$> name -- order important, this tried after bool and null
         <|> VList <$> (token "[" *> many (token value) <* token "]")
         <|> VObject <$> (token "{" *> many entry <* token "}")
+        <|> VVariable <$> variable
     where
         numv = do
             parsed <- scientific

@@ -134,22 +134,23 @@ tests = testGroup "Parse" [
                 -- InlineFragment (Maybe Text) (Maybe Directives) SelectionSet
 
         testGroup "Values" [
-            testLiteral "int" "7" (VInt 7),
-            testLiteral "int from" "7.000" (VInt 7),
-            testLiteral "float" "7.034" (VFloat 7.034),
-            testLiteral "float e" "-112.3e-4" (VFloat (-112.3e-4)),
-            testLiteral "string" "\"this is string\"" (VString "this is string"),
-            testLiteral "string with spaces" "\"  this is string  \"" (VString "  this is string  "),
-            testLiteral "string with escapes" "\"a \\t b\\r \\\\ s\\\"t \\f\\/\\n\\b\"" (VString "a \t b\r \\ s\"t \f/\n\b"),
-            testLiteral "string with unicode escapes ""\" \\uabcd \\u12345\"" (VString (" \xABCD \x1234" <> "5")),
-            testLiteral "block quote string indent" "\"\"\" \n \n this is\n   indented\n somewhat\\\"\"\"\n\n \n   \"\"\"" (VString ("this is\n  indented\nsomewhat\"\"\"")),
-            testLiteral "bool - true" "true" (VBool True),
-            testLiteral "bool - false" "false" (VBool False),
-            testLiteral "null" "null" VNull,
-            testLiteral "enum" "CLOSED" (VEnum "CLOSED"),
-            testLiteral "list" "[7 1.3 \"seven\"]" (VList [VInt 7, VFloat 1.3, VString "seven"]),
-            testLiteral "empty list" "[]" (VList []),
-            testLiteral "object" "{ birthday : \"happy\", age: 3}" (VObject [("birthday", VString "happy"), ("age", VInt 3)])
+            testValue "int" "7" (VInt 7),
+            testValue "int from" "7.000" (VInt 7),
+            testValue "float" "7.034" (VFloat 7.034),
+            testValue "float e" "-112.3e-4" (VFloat (-112.3e-4)),
+            testValue "string" "\"this is string\"" (VString "this is string"),
+            testValue "string with spaces" "\"  this is string  \"" (VString "  this is string  "),
+            testValue "string with escapes" "\"a \\t b\\r \\\\ s\\\"t \\f\\/\\n\\b\"" (VString "a \t b\r \\ s\"t \f/\n\b"),
+            testValue "string with unicode escapes ""\" \\uabcd \\u12345\"" (VString (" \xABCD \x1234" <> "5")),
+            testValue "block quote string indent" "\"\"\" \n \n this is\n   indented\n somewhat\\\"\"\"\n\n \n   \"\"\"" (VString ("this is\n  indented\nsomewhat\"\"\"")),
+            testValue "bool - true" "true" (VBool True),
+            testValue "bool - false" "false" (VBool False),
+            testValue "null" "null" VNull,
+            testValue "enum" "CLOSED" (VEnum "CLOSED"),
+            testValue "list" "[7 1.3 \"seven\"]" (VList [VInt 7, VFloat 1.3, VString "seven"]),
+            testValue "empty list" "[]" (VList []),
+            testValue "object" "{ birthday : \"happy\", age: 3}" (VObject [("birthday", VString "happy"), ("age", VInt 3)]),
+            testValue "variable" "$input" (VVariable "input")
             ]
     ]
 
@@ -160,8 +161,8 @@ testParseFail name invalid = testCase name $
 testParse :: [Char] -> DocumentNode -> DocumentNode -> TestTree
 testParse name actual expected = testCase name $ actual @?= expected
 
-testLiteral :: [Char] -> Text -> Value -> TestTree
-testLiteral name lit expected = testCase name $
+testValue :: [Char] -> Text -> Value -> TestTree
+testValue name lit expected = testCase name $
                 (parseOnly document ("query ($a:Int = " <> lit <> ") {q}")) @?=
                 (
                     Right (

@@ -1,4 +1,8 @@
-variable value (and generally, how to deal "const" contexts)
+how should we deal with "const" contexts?
+  - in the parser?
+  - int the AST validation
+
+
 
 mutation
 
