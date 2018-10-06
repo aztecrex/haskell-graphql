@@ -76,8 +76,43 @@ data Directive =
     deriving (Show, Eq, Generic, Data)
 
 
-data TypeSystemDefinitionNode = TSDN -- NYI
+data TypeSystemDefinitionNode =
+        TSDNRoots RootOperationTypeDefinitionsNode
+    |   TSDNDirective DirectiveDefinitionNode
     deriving (Show, Eq, Generic, Data)
+
+type RootOperationTypeDefinitionsNode = NonEmpty RootOperationTypeDefinitionNode
+
+data RootOperationTypeDefinitionNode =
+        ROTDNDefinition OperationType Text
+    deriving (Show, Eq, Generic, Data)
+
+data DirectiveDefinitionNode =
+        DDN -- temp
+    |   DDNDefinition Text (Maybe Arguments) DirectiveLocation
+    deriving (Show, Eq, Generic, Data)
+
+data DirectiveLocation =
+        DL_QUERY
+    |   DL_MUTATION
+    |   DL_SUBSCRIPTION
+    |   DL_FIELD
+    |   DL_FRAGMENT_DEFINITION
+    |   DL_FRAGMENT_SPREAD
+    |   DL_INLINE_FRAGMENT
+    |   DL_SCHEMA
+    |   DL_SCALAR
+    |   DL_OBJECT
+    |   DL_FIELD_DEFINITION
+    |   DL_ARGUMENT_DEFINITION
+    |   DL_INTERFACE
+    |   DL_UNION
+    |   DL_ENUM
+    |   DL_ENUM_VALUE
+    |   DL_INPUT_OBJECT
+    |   DL_INPUT_FIELD_DEFINITION
+    deriving (Show, Eq, Generic, Data)
+
 data TypeSystemDefinitionExtensionNode = TSDEN -- NYI
     deriving (Show, Eq, Generic, Data)
 
