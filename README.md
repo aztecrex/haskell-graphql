@@ -10,7 +10,7 @@ Notable capabilities
 
 Current work is parsing type system extensions.
 
-See [TODO.txt](./blob/master/TODO.txt) for near-term task list.
+See [TODO.txt](TODO.txt) for near-term task list.
 
 
 ## Design
