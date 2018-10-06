@@ -1,6 +1,3 @@
-wip: type system defs
- - implement the rest of type system defs
-
 how should we deal with "const" contexts?
   - in the parser?
   - int the AST validation
