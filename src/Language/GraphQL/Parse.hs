@@ -39,7 +39,7 @@ argumentsDefinition :: Parser ArgumentsDefinition
 argumentsDefinition = token "(" *> ((:|) <$> token inputValueDefinition <*> many inputValueDefinition) <* token ")"
 
 inputValueDefinition :: Parser InputValueDefinitionNode
-inputValueDefinition = IVDN' <$>
+inputValueDefinition = IVDN <$>
             optional (token (normalString <|> blockString))
         <*> token name
         <* token ":"

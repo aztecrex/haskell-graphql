@@ -94,8 +94,7 @@ data DirectiveDefinitionNode =
 type ArgumentsDefinition = NonEmpty InputValueDefinitionNode
 
 data InputValueDefinitionNode =
-        IVDN' (Maybe Text) Text Type  (Maybe Value) (Maybe Directives)
-    |   IVDN -- temp, delete
+        IVDN (Maybe Text) Text Type  (Maybe Value) (Maybe Directives)
     deriving (Show, Eq, Generic, Data)
 
 
