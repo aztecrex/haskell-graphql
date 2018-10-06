@@ -33,7 +33,19 @@ typeSystemDefinition =
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode
-directiveDefinition = DDNDefinition <$> (token "directive" *> token "@" *> token name) <*> pure Nothing <*> (token "on" *> token directiveLocation)
+directiveDefinition = DDNDefinition <$> (token "directive" *> token "@" *> token name) <*> optional argumentsDefinition <*> (token "on" *> token directiveLocation)
+
+argumentsDefinition :: Parser ArgumentsDefinition
+argumentsDefinition = token "(" *> ((:|) <$> token inputValueDefinition <*> many inputValueDefinition) <* token ")"
+
+inputValueDefinition :: Parser InputValueDefinitionNode
+inputValueDefinition = IVDN' <$>
+            optional (token (normalString <|> blockString))
+        <*> token name
+        <* token ":"
+        <*> token type_
+        <*> optional (token vdefault)
+        <*> optional directives
 
 directiveLocation :: Parser DirectiveLocation
 directiveLocation =

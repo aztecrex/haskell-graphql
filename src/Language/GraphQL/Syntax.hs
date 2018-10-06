@@ -88,9 +88,16 @@ data RootOperationTypeDefinitionNode =
     deriving (Show, Eq, Generic, Data)
 
 data DirectiveDefinitionNode =
-        DDN -- temp
-    |   DDNDefinition Text (Maybe Arguments) DirectiveLocation
+        DDNDefinition Text (Maybe ArgumentsDefinition) DirectiveLocation
     deriving (Show, Eq, Generic, Data)
+
+type ArgumentsDefinition = NonEmpty InputValueDefinitionNode
+
+data InputValueDefinitionNode =
+        IVDN' (Maybe Text) Text Type  (Maybe Value) (Maybe Directives)
+    |   IVDN -- temp, delete
+    deriving (Show, Eq, Generic, Data)
+
 
 data DirectiveLocation =
         DL_QUERY
@@ -115,8 +122,6 @@ data DirectiveLocation =
 
 data TypeSystemDefinitionExtensionNode = TSDEN -- NYI
     deriving (Show, Eq, Generic, Data)
-
-
 
 -- data TypeSysDef where
 --     SchemaDefinition :: Maybe Directives -> NonEmpty RootOperationTypeDefinition -> TypeSysDef
