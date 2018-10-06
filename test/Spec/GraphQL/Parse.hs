@@ -388,16 +388,36 @@ tests = testGroup "Parse" [
 
         testParse "input object type definition" [graphql|
                     "household items" input Parms @defs {
-                            "a ladder 6 feet" normalizeed : Structure! = true @corner
+                            "a ladder 6 feet" normalized : Structure! = true @corner
                             never : String
                         }
                     input Recipe { feeds : Int! }
                     input YetAnotherEmptyDefinition
                     |] $
                     nempt [
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN)
+                        DNTypeSystem (TSDNType (TDNInput
+                            (Just "household items")
+                            "Parms"
+                            (mnempt [Directive "defs" Nothing])
+                            (mnempt [
+                                IVDN (Just "a ladder 6 feet") "normalized" (TNamed "Structure" True) (Just (VBool True)) (mnempt [Directive "corner" Nothing]),
+                                IVDN Nothing "never" (TNamed "String" False) Nothing Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNInput
+                            Nothing
+                            "Recipe"
+                            Nothing
+                            (mnempt [
+                                IVDN Nothing "feeds" (TNamed "Int" True) Nothing Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNInput
+                            Nothing
+                            "YetAnotherEmptyDefinition"
+                            Nothing
+                            Nothing
+                        ))
                         ],
 
 
@@ -483,5 +503,4 @@ nempt (a : as) = a :| as
 mnempt :: [a] -> Maybe (NonEmpty a)
 mnempt [] = Nothing
 mnempt as = Just (nempt as)
-
 

@@ -112,13 +112,13 @@ unionMembers = optional (token "|") *> ((:|) <$> token name <*> many (token "|" 
 
 
 inputTypeDef :: Parser TypeDefinitionNode
-inputTypeDef = TDN <$ (
+inputTypeDef = TDNInput <$>
         (optional description)
-    <*  token "input"
-    <*  token name
-    <*  optional (token directives)
-    <*  optional inputFieldsDefinition
-    )
+    <*> (token "input"
+    *>  token name)
+    <*> optional (token directives)
+    <*> optional inputFieldsDefinition
+
 
 inputFieldsDefinition :: Parser (NonEmpty InputValueDefinitionNode)
 inputFieldsDefinition = token "{" *> ((:|) <$> inputValueDefinition <*> many inputValueDefinition) <* token "}"

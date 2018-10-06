@@ -88,6 +88,7 @@ data TypeDefinitionNode =
     |   TDNObject (Maybe Text) Text (Maybe (NonEmpty Text)) (Maybe Directives) (Maybe (NonEmpty FieldDefinitionNode))
     |   TDNInterface (Maybe Text) Text (Maybe Directives) (Maybe (NonEmpty FieldDefinitionNode))
     |   TDNUnion (Maybe Text) Text (Maybe Directives) (Maybe (NonEmpty Text))
+    |   TDNInput (Maybe Text) Text (Maybe Directives) (Maybe (NonEmpty InputValueDefinitionNode))
     |   TDN
     deriving (Show, Eq, Generic, Data)
 
