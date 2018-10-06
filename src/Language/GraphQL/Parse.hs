@@ -66,14 +66,14 @@ enumValueDef = EnumValueDef <$>
     <*> optional (token directives)
 
 objectTypeDef :: Parser TypeDefinitionNode
-objectTypeDef = TDN <$ (
+objectTypeDef = TDNObject <$>
         (optional description)
-    <* token "type"
-    <* token name
-    <* optional implementsInterfaces
-    <* optional (token directives)
-    <* optional fieldsDefinition
-    )
+    <*> (token "type"
+    *> token name)
+    <*> optional implementsInterfaces
+    <*> optional (token directives)
+    <*> optional fieldsDefinition
+
 
 implementsInterfaces :: Parser (NonEmpty Text)
 implementsInterfaces = token "implements" *> optional (token "&") *> ((:|) <$> token name <*> many (token name))
@@ -87,11 +87,16 @@ interfaceTypeDef = TDN <$ (
     <*  optional fieldsDefinition
     )
 
-fieldsDefinition :: Parser ()
-fieldsDefinition = token "{" *> ((:|) <$> token fieldDefinition <*> many (token fieldDefinition)) *> token "}" *> pure ()
+fieldsDefinition :: Parser (NonEmpty FieldDefinitionNode)
+fieldsDefinition = token "{" *> ((:|) <$> token fieldDefinition <*> many (token fieldDefinition)) <* token "}"
 
-fieldDefinition :: Parser ()
-fieldDefinition = optional description *> token name *> optional argumentsDefinition *> token ":" *> token type_ *> optional directives *> pure ()
+fieldDefinition :: Parser FieldDefinitionNode
+fieldDefinition = FieldDefinition <$>
+        optional description
+    <*> token name
+    <*> optional argumentsDefinition
+    <*> (token ":" *> token type_)
+    <*> optional directives
 
 unionTypeDef :: Parser TypeDefinitionNode
 unionTypeDef = TDN <$ (

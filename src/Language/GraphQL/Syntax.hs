@@ -85,7 +85,11 @@ data TypeSystemDefinitionNode =
 data TypeDefinitionNode =
         TDNScalar (Maybe Text) Text (Maybe Directives)
     |   TDNEnum (Maybe Text) Text (Maybe Directives) (Maybe (NonEmpty EnumValueDefNode))
+    |   TDNObject (Maybe Text) Text (Maybe (NonEmpty Text)) (Maybe Directives) (Maybe (NonEmpty FieldDefinitionNode))
     |   TDN
+    deriving (Show, Eq, Generic, Data)
+
+data FieldDefinitionNode = FieldDefinition (Maybe Text) Text (Maybe ArgumentsDefinition) Type (Maybe Directives)
     deriving (Show, Eq, Generic, Data)
 
 data EnumValueDefNode = EnumValueDef (Maybe Text) Text (Maybe Directives)

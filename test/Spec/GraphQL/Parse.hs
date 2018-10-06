@@ -219,21 +219,74 @@ tests = testGroup "Parse" [
 
         testParse "object type definition" [graphql|
                     "horse props" type Props implements & Animal Asset @defs {
-                            "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
-                            dsp : String
+                        "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
+                        dsp : String
                         }
                     "horse props" type Props implements Animal Asset @defs {
                         "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
                         dsp : String
                     }
-                    type Taco {filling : Filling shell : Material}
+                    type Taco {filling : Filling! shell : Material}
                     type WhatGoodIsThis
                     |] $
                     nempt [
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN)
+                        DNTypeSystem (TSDNType (TDNObject
+                            (Just "horse props")
+                            "Props"
+                            (mnempt ["Animal", "Asset"])
+                            (mnempt [Directive "defs" Nothing])
+                            (mnempt [
+                                FieldDefinition
+                                    (Just "regular octane")
+                                    "SPf"
+                                    (mnempt [
+                                        IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (mnempt [Directive "over" Nothing])
+                                    ])
+                                    (TNamed "Int" True)
+                                    (mnempt [Directive "corner" Nothing]),
+                                FieldDefinition
+                                    Nothing
+                                    "dsp"
+                                    Nothing
+                                    (TNamed "String" False)
+                                    Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNObject
+                            (Just "horse props")
+                            "Props"
+                            (mnempt ["Animal", "Asset"])
+                            (mnempt [Directive "defs" Nothing])
+                            (mnempt [
+                                FieldDefinition
+                                    (Just "regular octane")
+                                    "SPf"
+                                    (mnempt [
+                                        IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (mnempt [Directive "over" Nothing])
+                                    ])
+                                    (TNamed "Int" True)
+                                    (mnempt [Directive "corner" Nothing]),
+                                FieldDefinition
+                                    Nothing
+                                    "dsp"
+                                    Nothing
+                                    (TNamed "String" False)
+                                    Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNObject
+                            Nothing
+                            "Taco"
+                            Nothing
+                            Nothing
+                            (mnempt [
+                                FieldDefinition Nothing "filling" Nothing (TNamed "Filling" True) Nothing,
+                                FieldDefinition Nothing "shell" Nothing (TNamed "Material" False) Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNObject
+                            Nothing "WhatGoodIsThis" Nothing Nothing Nothing
+                        ))
                         ],
 
         testParse "interface type definition" [graphql|
@@ -362,3 +415,9 @@ nempt (a : as) = a :| as
 mnempt :: [a] -> Maybe (NonEmpty a)
 mnempt [] = Nothing
 mnempt as = Just (nempt as)
+
+
+-- DNTypeSystem (TSDNType (TDNObject (Just "horse props") "Props" (Just ("Animal" :| ["Asset"])) (Just (Directive "defs" Nothing :| [])) (Just (FieldDefinition (Just "regular octane") "SPf" (Just (IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (Just (Directive "over" Nothing :| [])) :| [IVDN Nothing "dsp" (TNamed "String" False) Nothing Nothing])) (TNamed "Int" True) (Just (Directive "corner" Nothing :| [])) :| [FieldDefinition Nothing "dsp" Nothing (TNamed "String" False) Nothing])))) :| [DNTypeSystem (TSDNType (TDNObject (Just "horse props") "Props" (Just ("Animal" :| ["Asset"])) (Just (Directive "defs" Nothing :| [])) (Just (FieldDefinition (Just "regular octane") "SPf" (Just (IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (Just (Directive "over" Nothing :| [])) :| [IVDN Nothing "dsp" (TNamed "String" False) Nothing Nothing])) (TNamed "Int" True) (Just (Directive "corner" Nothing :| [])) :| [FieldDefinition Nothing "dsp" Nothing (TNamed "String" False) Nothing])))),DNTypeSystem (TSDNType (TDNObject Nothing "Taco" Nothing Nothing (Just (FieldDefinition Nothing "filling" Nothing (TNamed "Filling" True) Nothing :| [FieldDefinition Nothing "shell" Nothing (TNamed "Material" False) Nothing])))),DNTypeSystem (TSDNType (TDNObject Nothing "WhatGoodIsThis" Nothing Nothing Nothing))]
+-- DNTypeSystem (TSDNType (TDNObject (Just "horse props") "Props" (Just ("Animal" :| ["Asset"])) (Just (Directive "defs" Nothing :| [])) (Just (FieldDefinition (Just "regular octane") "SPf" (Just (IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (Just (Directive "over" Nothing :| [])) :| [                                                          ])) (TNamed "Int" True) (Just (Directive "corner" Nothing :| [])) :| [FieldDefinition Nothing "dsp" Nothing (TNamed "String" False) Nothing])))) :| [DNTypeSystem (TSDNType (TDNObject (Just "horse props") "Props" (Just ("Animal" :| ["Asset"])) (Just (Directive "defs" Nothing :| [])) (Just (FieldDefinition (Just "regular octane") "SPf" (Just (IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (Just (Directive "over" Nothing :| [])) :| [])) (TNamed "Int" True) (Just (Directive "corner" Nothing :| [])) :| [FieldDefinition Nothing "dsp" Nothing (TNamed "String" False) Nothing])))),DNTypeSystem (TSDNType (TDNObject Nothing "Taco" Nothing Nothing (Just (FieldDefinition Nothing "filling" Nothing (TNamed "Filling" True) Nothing :| [FieldDefinition Nothing "shell" Nothing (TNamed "Material" False) Nothing])))),DNTypeSystem (TSDNType (TDNObject Nothing "WhatGoodIsThis" Nothing Nothing Nothing))]
+
+
