@@ -354,11 +354,36 @@ tests = testGroup "Parse" [
                     union StillMakesNoSense
                     |] $
                     nempt [
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN)
+                        DNTypeSystem (TSDNType (TDNUnion
+                            (Just "whatever we want to return")
+                            "Thing"
+                            (mnempt [Directive "scorp" Nothing])
+                            (mnempt ["Animal", "Taco", "Airplane"])
+                        )),
+                        DNTypeSystem (TSDNType (TDNUnion
+                            (Just "whatever we want to return")
+                            "Thing"
+                            (mnempt [Directive "scorp" Nothing])
+                            (mnempt ["Animal", "Taco", "Airplane"])
+                        )),
+                        DNTypeSystem (TSDNType (TDNUnion
+                            Nothing
+                            "Care"
+                            Nothing
+                            (mnempt ["Hospital", "Delivery"])
+                        )),
+                        DNTypeSystem (TSDNType (TDNUnion
+                            Nothing
+                            "Care"
+                            Nothing
+                            (mnempt ["Hospital", "Delivery"])
+                        )),
+                        DNTypeSystem (TSDNType (TDNUnion
+                            Nothing
+                            "StillMakesNoSense"
+                            Nothing
+                            Nothing
+                        ))
                         ],
 
         testParse "input object type definition" [graphql|
@@ -458,6 +483,5 @@ nempt (a : as) = a :| as
 mnempt :: [a] -> Maybe (NonEmpty a)
 mnempt [] = Nothing
 mnempt as = Just (nempt as)
-
 
 

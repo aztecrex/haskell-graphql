@@ -99,16 +99,16 @@ fieldDefinition = FieldDefinition <$>
     <*> optional directives
 
 unionTypeDef :: Parser TypeDefinitionNode
-unionTypeDef = TDN <$ (
+unionTypeDef = TDNUnion <$>
         (optional description)
-    <*  token "union"
-    <*  token name
-    <*  optional (token directives)
-    <*  optional unionMembers
-    )
+    <*> (token "union"
+    *>  token name)
+    <*>  optional (token directives)
+    <*>  optional unionMembers
 
-unionMembers :: Parser ()
-unionMembers = optional (token "|") *> ((:|) <$> token name <*> many (token "|" *> token name)) *> pure ()
+
+unionMembers :: Parser (NonEmpty Text)
+unionMembers = optional (token "|") *> ((:|) <$> token name <*> many (token "|" *> token name))
 
 
 inputTypeDef :: Parser TypeDefinitionNode
