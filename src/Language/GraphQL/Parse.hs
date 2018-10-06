@@ -40,7 +40,24 @@ argumentsDefinition :: Parser ArgumentsDefinition
 argumentsDefinition = token "(" *> ((:|) <$> token inputValueDefinition <*> many inputValueDefinition) <* token ")"
 
 typeDefinition :: Parser TypeDefinitionNode
-typeDefinition = TDN <$ ((optional description) <* token "scalar" <* token name <* optional (token directives))
+typeDefinition =
+        scalarTypeDef
+    <|> enumTypeDef
+
+scalarTypeDef :: Parser TypeDefinitionNode
+scalarTypeDef = TDN <$ ((optional description) <* token "scalar" <* token name <* optional (token directives))
+
+enumTypeDef :: Parser TypeDefinitionNode
+enumTypeDef = TDN <$ (
+        (optional description)
+    <* token "enum"
+    <* token name
+    <* optional (token directives)
+    <* token "{" <* ((:|) <$> enumValueDef <*> many enumValueDef) <* token "}"
+    )
+
+enumValueDef :: Parser ()
+enumValueDef = optional description *> token (nameBut ["null", "true", "false"]) *> optional (token directives) *> pure ()
 
 inputValueDefinition :: Parser InputValueDefinitionNode
 inputValueDefinition = IVDN <$>

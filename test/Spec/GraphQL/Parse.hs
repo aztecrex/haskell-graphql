@@ -179,6 +179,17 @@ tests = testGroup "Parse" [
                         DNTypeSystem (TSDNType TDN)
                         ],
 
+        testParse "enum type definition" [graphql|
+                    "kind of horse" enum Kind @defs {
+                            "color is brown" BROWN @valuable
+                            SPOTTED
+                        }
+                        enum Filling {ALPASTOR CHORIZO CABEZA}|] $
+                    nempt [
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN)
+                        ],
+
 
         testGroup "Directive Locations" [
             testDirectiveLocation "QUERY" DL_QUERY,
