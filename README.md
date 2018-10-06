@@ -4,9 +4,14 @@
 
 ## Status
 
-- The parser can handle executable definitions.
+Notable capabilities
+- The parser can handle executable definitions
+- The parser can handle type definitions
 
-Current work is on type system definitions.
+Current work is parsing type system extensions.
+
+See [TODO.txt](./blob/master/TODO.txt) for near-term task list.
+
 
 ## Design
 
