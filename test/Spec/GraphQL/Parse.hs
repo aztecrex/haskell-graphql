@@ -165,9 +165,13 @@ tests = testGroup "Parse" [
                             )
                         on QUERY|] $
                     nempt [DNTypeSystem (TSDNDirective (DDNDefinition "big"
-                                (mnempt [IVDN, IVDN] )
+                                (mnempt [
+                                IVDN' (Just "name of the thing") "name" (TNamed "String" False) (Just (VInt 19)) (mnempt [Directive "defs" Nothing]),
+                                IVDN' Nothing "id" (TNamed "Int" True) Nothing Nothing])
                             DL_QUERY))]
         ],
+
+        -- IVDN' (Maybe Text) Text Type  (Maybe Value) (Maybe Directives)
         testGroup "Values" [
             testValue "int" "7" (VInt 7),
             testValue "int from" "7.000" (VInt 7),
