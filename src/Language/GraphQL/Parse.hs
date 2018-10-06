@@ -51,6 +51,22 @@ directiveLocation :: Parser DirectiveLocation
 directiveLocation =
         token "QUERY" *> pure DL_QUERY
     <|> token "MUTATION" *> pure DL_MUTATION
+    <|> token "SUBSCRIPTION" *> pure DL_SUBSCRIPTION
+    <|> token "FIELD_DEFINITION" *> pure DL_FIELD_DEFINITION
+    <|> token "FIELD" *> pure DL_FIELD
+    <|> token "FRAGMENT_DEFINITION" *> pure DL_FRAGMENT_DEFINITION
+    <|> token "FRAGMENT_SPREAD" *> pure DL_FRAGMENT_SPREAD
+    <|> token "INLINE_FRAGMENT" *> pure DL_INLINE_FRAGMENT
+    <|> token "SCHEMA" *> pure DL_SCHEMA
+    <|> token "SCALAR" *> pure DL_SCALAR
+    <|> token "OBJECT" *> pure DL_OBJECT
+    <|> token "ARGUMENT_DEFINITION" *> pure DL_ARGUMENT_DEFINITION
+    <|> token "INTERFACE" *> pure DL_INTERFACE
+    <|> token "UNION" *> pure DL_UNION
+    <|> token "ENUM_VALUE" *> pure DL_ENUM_VALUE
+    <|> token "ENUM" *> pure DL_ENUM
+    <|> token "INPUT_OBJECT" *> pure DL_INPUT_OBJECT
+    <|> token "INPUT_FIELD_DEFINITION" *> pure DL_INPUT_FIELD_DEFINITION
 
 rootOperationTypes :: Parser RootOperationTypeDefinitionsNode
 rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (token rootOperationType))

@@ -174,8 +174,23 @@ tests = testGroup "Parse" [
 
         testGroup "Directive Locations" [
             testDirectiveLocation "QUERY" DL_QUERY,
-            testDirectiveLocation "MUTATION" DL_MUTATION
-
+            testDirectiveLocation "MUTATION" DL_MUTATION,
+            testDirectiveLocation "SUBSCRIPTION" DL_SUBSCRIPTION,
+            testDirectiveLocation "FIELD" DL_FIELD,
+            testDirectiveLocation "FRAGMENT_DEFINITION" DL_FRAGMENT_DEFINITION,
+            testDirectiveLocation "FRAGMENT_SPREAD" DL_FRAGMENT_SPREAD,
+            testDirectiveLocation "INLINE_FRAGMENT" DL_INLINE_FRAGMENT,
+            testDirectiveLocation "SCHEMA" DL_SCHEMA,
+            testDirectiveLocation "SCALAR" DL_SCALAR,
+            testDirectiveLocation "OBJECT" DL_OBJECT,
+            testDirectiveLocation "FIELD_DEFINITION" DL_FIELD_DEFINITION,
+            testDirectiveLocation "ARGUMENT_DEFINITION" DL_ARGUMENT_DEFINITION,
+            testDirectiveLocation "INTERFACE" DL_INTERFACE,
+            testDirectiveLocation "UNION" DL_UNION,
+            testDirectiveLocation "ENUM" DL_ENUM,
+            testDirectiveLocation "ENUM_VALUE" DL_ENUM_VALUE,
+            testDirectiveLocation "INPUT_OBJECT" DL_INPUT_OBJECT,
+            testDirectiveLocation "INPUT_FIELD_DEFINITION" DL_INPUT_FIELD_DEFINITION
         ],
 
         testGroup "Values" [
