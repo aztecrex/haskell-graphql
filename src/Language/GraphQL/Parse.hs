@@ -49,7 +49,7 @@ typeDefinition =
     <|> inputTypeDef
 
 scalarTypeDef :: Parser TypeDefinitionNode
-scalarTypeDef = TDN <$ ((optional description) <* token "scalar" <* token name <* optional (token directives))
+scalarTypeDef = TDNScalar <$> optional description <*> (token "scalar" *> token name) <*> optional (token directives)
 
 enumTypeDef :: Parser TypeDefinitionNode
 enumTypeDef = TDN <$ (

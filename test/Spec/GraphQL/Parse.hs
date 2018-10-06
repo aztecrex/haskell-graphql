@@ -175,8 +175,9 @@ tests = testGroup "Parse" [
                     "name of horse" scalar name @defs
                     scalar Taco|] $
                     nempt [
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN)
+                        DNTypeSystem (TSDNType (TDNScalar (Just "name of horse") "name"
+                                (mnempt [Directive "defs" Nothing]))),
+                        DNTypeSystem (TSDNType (TDNScalar Nothing "Taco" Nothing))
                         ],
 
         testParse "enum type definition" [graphql|

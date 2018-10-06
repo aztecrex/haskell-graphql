@@ -83,7 +83,8 @@ data TypeSystemDefinitionNode =
     deriving (Show, Eq, Generic, Data)
 
 data TypeDefinitionNode =
-    TDN
+        TDNScalar (Maybe Text) Text (Maybe Directives)
+    |   TDN
     deriving (Show, Eq, Generic, Data)
 
 type RootOperationTypeDefinitionsNode = NonEmpty RootOperationTypeDefinitionNode
