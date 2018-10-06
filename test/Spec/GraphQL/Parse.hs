@@ -223,6 +223,22 @@ tests = testGroup "Parse" [
                         DNTypeSystem (TSDNType TDN)
                         ],
 
+        testParse "union type definition" [graphql|
+                    "whatever we want to return" union Thing @scorp   Animal | Taco | Airplane
+                    "whatever we want to return" union Thing @scorp | Animal | Taco | Airplane
+                    union Care   Hospital | Delivery
+                    union Care | Hospital | Delivery
+                    interface StillMakesNoSense
+                    |] $
+                    nempt [
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN)
+                        ],
+
+
 
 
         testGroup "Directive Locations" [

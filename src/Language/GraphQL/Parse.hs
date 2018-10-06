@@ -45,6 +45,7 @@ typeDefinition =
     <|> enumTypeDef
     <|> objectTypeDef
     <|> interfaceTypeDef
+    <|> unionTypeDef
 
 scalarTypeDef :: Parser TypeDefinitionNode
 scalarTypeDef = TDN <$ ((optional description) <* token "scalar" <* token name <* optional (token directives))
@@ -88,6 +89,18 @@ fieldsDefinition = token "{" *> ((:|) <$> token fieldDefinition <*> many (token 
 
 fieldDefinition :: Parser ()
 fieldDefinition = optional description *> token name *> optional argumentsDefinition *> token ":" *> token type_ *> optional directives *> pure ()
+
+unionTypeDef :: Parser TypeDefinitionNode
+unionTypeDef = TDN <$ (
+        (optional description)
+    <*  token "union"
+    <*  token name
+    <*  optional (token directives)
+    <*  optional unionMembers
+    )
+
+unionMembers :: Parser ()
+unionMembers = optional (token "|") *> ((:|) <$> token name <*> many (token "|" *> token name)) *> pure ()
 
 
 inputValueDefinition :: Parser InputValueDefinitionNode
