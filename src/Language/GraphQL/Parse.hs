@@ -46,6 +46,7 @@ typeDefinition =
     <|> objectTypeDef
     <|> interfaceTypeDef
     <|> unionTypeDef
+    <|> inputTypeDef
 
 scalarTypeDef :: Parser TypeDefinitionNode
 scalarTypeDef = TDN <$ ((optional description) <* token "scalar" <* token name <* optional (token directives))
@@ -102,6 +103,18 @@ unionTypeDef = TDN <$ (
 unionMembers :: Parser ()
 unionMembers = optional (token "|") *> ((:|) <$> token name <*> many (token "|" *> token name)) *> pure ()
 
+
+inputTypeDef :: Parser TypeDefinitionNode
+inputTypeDef = TDN <$ (
+        (optional description)
+    <*  token "input"
+    <*  token name
+    <*  optional (token directives)
+    <*  optional inputFieldsDefinition
+    )
+
+inputFieldsDefinition :: Parser (NonEmpty InputValueDefinitionNode)
+inputFieldsDefinition = token "{" *> ((:|) <$> inputValueDefinition <*> many inputValueDefinition) <* token "}"
 
 inputValueDefinition :: Parser InputValueDefinitionNode
 inputValueDefinition = IVDN <$>

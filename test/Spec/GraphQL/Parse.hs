@@ -238,6 +238,19 @@ tests = testGroup "Parse" [
                         DNTypeSystem (TSDNType TDN)
                         ],
 
+        testParse "input object type definition" [graphql|
+                    "household items" input Parms @defs {
+                            "a ladder 6 feet" normalizeed : Structure! = true @corner
+                            never : String
+                        }
+                    input Recipe { feeds : Int! }
+                    input YetAnotherEmptyDefinition
+                    |] $
+                    nempt [
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN)
+                        ],
 
 
 
