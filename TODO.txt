@@ -1,5 +1,4 @@
 wip: type system defs
- - implement rest of directive locations
  - implement the rest of type system defs
 
 how should we deal with "const" contexts?

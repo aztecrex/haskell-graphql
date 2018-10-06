@@ -8,7 +8,7 @@ import Data.Attoparsec.Text (parseOnly, Parser)
 import Data.Either (isLeft)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
-import Data.Text (Text)
+import Data.Text (Text, unpack)
 import Language.GraphQL.Parse
 import Language.GraphQL.Syntax
 import Language.GraphQL.TH (graphql)
@@ -171,7 +171,28 @@ tests = testGroup "Parse" [
                             DL_QUERY))]
         ],
 
-        -- IVDN' (Maybe Text) Text Type  (Maybe Value) (Maybe Directives)
+
+        testGroup "Directive Locations" [
+            testDirectiveLocation "QUERY" DL_QUERY,
+            testDirectiveLocation "MUTATION" DL_MUTATION,
+            testDirectiveLocation "SUBSCRIPTION" DL_SUBSCRIPTION,
+            testDirectiveLocation "FIELD" DL_FIELD,
+            testDirectiveLocation "FRAGMENT_DEFINITION" DL_FRAGMENT_DEFINITION,
+            testDirectiveLocation "FRAGMENT_SPREAD" DL_FRAGMENT_SPREAD,
+            testDirectiveLocation "INLINE_FRAGMENT" DL_INLINE_FRAGMENT,
+            testDirectiveLocation "SCHEMA" DL_SCHEMA,
+            testDirectiveLocation "SCALAR" DL_SCALAR,
+            testDirectiveLocation "OBJECT" DL_OBJECT,
+            testDirectiveLocation "FIELD_DEFINITION" DL_FIELD_DEFINITION,
+            testDirectiveLocation "ARGUMENT_DEFINITION" DL_ARGUMENT_DEFINITION,
+            testDirectiveLocation "INTERFACE" DL_INTERFACE,
+            testDirectiveLocation "UNION" DL_UNION,
+            testDirectiveLocation "ENUM" DL_ENUM,
+            testDirectiveLocation "ENUM_VALUE" DL_ENUM_VALUE,
+            testDirectiveLocation "INPUT_OBJECT" DL_INPUT_OBJECT,
+            testDirectiveLocation "INPUT_FIELD_DEFINITION" DL_INPUT_FIELD_DEFINITION
+        ],
+
         testGroup "Values" [
             testValue "int" "7" (VInt 7),
             testValue "int from" "7.000" (VInt 7),
@@ -192,6 +213,11 @@ tests = testGroup "Parse" [
             testValue "variable" "$input" (VVariable "input")
             ]
     ]
+
+testDirectiveLocation :: Text -> DirectiveLocation -> TestTree
+testDirectiveLocation s v = testCase (unpack s) $ parseOnly document (
+        "directive @a on " <> s
+        ) @?= Right (nempt [DNTypeSystem (TSDNDirective (DDNDefinition "a" Nothing v))])
 
 testParseFail :: [Char] -> Text -> TestTree
 testParseFail name invalid = testCase name $
