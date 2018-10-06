@@ -190,6 +190,26 @@ tests = testGroup "Parse" [
                         DNTypeSystem (TSDNType TDN)
                         ],
 
+        testParse "object type definition" [graphql|
+                    "horse props" type Props implements & Animal Asset @defs {
+                            "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
+                            dsp : String
+                        }
+                        "horse props" type Props implements Animal Asset @defs {
+                            "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
+                            dsp : String
+                        }
+                        type Taco {filling : Filling shell : Material}
+                        type WhatGoodIsThis
+                        |] $
+                    nempt [
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN)
+                        ],
+
+
 
         testGroup "Directive Locations" [
             testDirectiveLocation "QUERY" DL_QUERY,
