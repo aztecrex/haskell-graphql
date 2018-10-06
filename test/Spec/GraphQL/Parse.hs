@@ -158,8 +158,15 @@ tests = testGroup "Parse" [
                             ROTDNDefinition MUTATION "TMutation",
                             ROTDNDefinition SUBSCRIPTION "TSubscription"])
                     )],
-        testParse "directive definition" [graphql|directive @big on QUERY|] $
-                    nempt [DNTypeSystem (TSDNDirective (DDNDefinition "big" Nothing DL_QUERY))]
+        testParse "directive definition" [graphql|directive
+                        @big (
+                            "name of the thing" name : String = 19 @defs
+                            id : Int!
+                            )
+                        on QUERY|] $
+                    nempt [DNTypeSystem (TSDNDirective (DDNDefinition "big"
+                                (mnempt [IVDN, IVDN] )
+                            DL_QUERY))]
         ],
         testGroup "Values" [
             testValue "int" "7" (VInt 7),
