@@ -171,6 +171,9 @@ tests = testGroup "Parse" [
                             DL_QUERY))]
         ],
 
+        testParse "scalar type definition" [graphql|"name of horse" scalar name @defs|] $
+                    nempt [DNTypeSystem (TSDNType TDN)],
+
 
         testGroup "Directive Locations" [
             testDirectiveLocation "QUERY" DL_QUERY,

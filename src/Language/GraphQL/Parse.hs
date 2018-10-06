@@ -30,6 +30,7 @@ typeSystemDefinition :: Parser TypeSystemDefinitionNode
 typeSystemDefinition =
         TSDNRoots <$> (token "schema" *> token rootOperationTypes)
     <|> TSDNDirective <$> directiveDefinition
+    <|> TSDNType <$> typeDefinition
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode
@@ -37,6 +38,9 @@ directiveDefinition = DDNDefinition <$> (token "directive" *> token "@" *> token
 
 argumentsDefinition :: Parser ArgumentsDefinition
 argumentsDefinition = token "(" *> ((:|) <$> token inputValueDefinition <*> many inputValueDefinition) <* token ")"
+
+typeDefinition :: Parser TypeDefinitionNode
+typeDefinition = TDN <$ ((optional description) <* token "scalar" <* token name <* optional (token directives))
 
 inputValueDefinition :: Parser InputValueDefinitionNode
 inputValueDefinition = IVDN <$>
@@ -181,6 +185,9 @@ fragmentName = nameBut ["on"]
 token :: Parser a -> Parser a
 token t = t <* ignored
 
+
+description :: Parser Text
+description = token (blockString <|> normalString)
 
 blockString :: Parser Text
 blockString = "\"\"\"" *> ((fixup . T.concat)<$> many stok) <* "\"\"\""

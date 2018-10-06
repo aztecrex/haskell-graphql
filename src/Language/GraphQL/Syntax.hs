@@ -79,6 +79,11 @@ data Directive =
 data TypeSystemDefinitionNode =
         TSDNRoots RootOperationTypeDefinitionsNode
     |   TSDNDirective DirectiveDefinitionNode
+    |   TSDNType TypeDefinitionNode
+    deriving (Show, Eq, Generic, Data)
+
+data TypeDefinitionNode =
+    TDN
     deriving (Show, Eq, Generic, Data)
 
 type RootOperationTypeDefinitionsNode = NonEmpty RootOperationTypeDefinitionNode
