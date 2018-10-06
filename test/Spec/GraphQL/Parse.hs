@@ -195,15 +195,29 @@ tests = testGroup "Parse" [
                             "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
                             dsp : String
                         }
-                        "horse props" type Props implements Animal Asset @defs {
-                            "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
-                            dsp : String
-                        }
-                        type Taco {filling : Filling shell : Material}
-                        type WhatGoodIsThis
-                        |] $
+                    "horse props" type Props implements Animal Asset @defs {
+                        "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
+                        dsp : String
+                    }
+                    type Taco {filling : Filling shell : Material}
+                    type WhatGoodIsThis
+                    |] $
                     nempt [
                         DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN),
+                        DNTypeSystem (TSDNType TDN)
+                        ],
+
+        testParse "interface type definition" [graphql|
+                    "animal props" interface Animal @scorp {
+                            "withholdings before taxes" dollarinos ("scuba diver" nominal : String = never @under) : Int! @paced
+                            light : Bulb
+                        }
+                    interface Bulb {filament : Material power : Watts}
+                    interface ReallyWhatGoodIsThis
+                    |] $
+                    nempt [
                         DNTypeSystem (TSDNType TDN),
                         DNTypeSystem (TSDNType TDN),
                         DNTypeSystem (TSDNType TDN)

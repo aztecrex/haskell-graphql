@@ -44,6 +44,7 @@ typeDefinition =
         scalarTypeDef
     <|> enumTypeDef
     <|> objectTypeDef
+    <|> interfaceTypeDef
 
 scalarTypeDef :: Parser TypeDefinitionNode
 scalarTypeDef = TDN <$ ((optional description) <* token "scalar" <* token name <* optional (token directives))
@@ -72,6 +73,15 @@ objectTypeDef = TDN <$ (
 
 implementsInterfaces :: Parser (NonEmpty Text)
 implementsInterfaces = token "implements" *> optional (token "&") *> ((:|) <$> token name <*> many (token name))
+
+interfaceTypeDef :: Parser TypeDefinitionNode
+interfaceTypeDef = TDN <$ (
+        (optional description)
+    <*  token "interface"
+    <*  token name
+    <*  optional (token directives)
+    <*  optional fieldsDefinition
+    )
 
 fieldsDefinition :: Parser ()
 fieldsDefinition = token "{" *> ((:|) <$> token fieldDefinition <*> many (token fieldDefinition)) *> token "}" *> pure ()
