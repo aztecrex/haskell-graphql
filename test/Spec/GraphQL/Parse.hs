@@ -294,13 +294,56 @@ tests = testGroup "Parse" [
                             "withholdings before taxes" dollarinos ("scuba diver" nominal : String = never @under) : Int! @paced
                             light : Bulb
                         }
-                    interface Bulb {filament : Material power : Watts}
+                    interface Bulb {filament : Material power : Watts!}
                     interface ReallyWhatGoodIsThis
                     |] $
                     nempt [
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN)
+                        DNTypeSystem (TSDNType (TDNInterface
+                            (Just "animal props")
+                            "Animal"
+                            (mnempt [Directive "scorp" Nothing])
+                            (mnempt [
+                                FieldDefinition
+                                    (Just "withholdings before taxes")
+                                    "dollarinos"
+                                    (mnempt [
+                                        IVDN (Just "scuba diver") "nominal" (TNamed "String" False) (Just (VEnum "never")) (mnempt [Directive "under" Nothing])
+                                    ])
+                                    (TNamed "Int" True)
+                                    (mnempt [Directive "paced" Nothing]),
+                                FieldDefinition
+                                    Nothing
+                                    "light"
+                                    Nothing
+                                    (TNamed "Bulb" False)
+                                    Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNInterface
+                            Nothing
+                            "Bulb"
+                            Nothing
+                            (mnempt [
+                                FieldDefinition
+                                    Nothing
+                                    "filament"
+                                    Nothing
+                                    (TNamed "Material" False)
+                                    Nothing,
+                                FieldDefinition
+                                    Nothing
+                                    "power"
+                                    Nothing
+                                    (TNamed "Watts" True)
+                                    Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNInterface
+                            Nothing
+                            "ReallyWhatGoodIsThis"
+                            Nothing
+                            Nothing
+                        ))
                         ],
 
         testParse "union type definition" [graphql|
@@ -308,7 +351,7 @@ tests = testGroup "Parse" [
                     "whatever we want to return" union Thing @scorp | Animal | Taco | Airplane
                     union Care   Hospital | Delivery
                     union Care | Hospital | Delivery
-                    interface StillMakesNoSense
+                    union StillMakesNoSense
                     |] $
                     nempt [
                         DNTypeSystem (TSDNType TDN),
@@ -416,8 +459,5 @@ mnempt :: [a] -> Maybe (NonEmpty a)
 mnempt [] = Nothing
 mnempt as = Just (nempt as)
 
-
--- DNTypeSystem (TSDNType (TDNObject (Just "horse props") "Props" (Just ("Animal" :| ["Asset"])) (Just (Directive "defs" Nothing :| [])) (Just (FieldDefinition (Just "regular octane") "SPf" (Just (IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (Just (Directive "over" Nothing :| [])) :| [IVDN Nothing "dsp" (TNamed "String" False) Nothing Nothing])) (TNamed "Int" True) (Just (Directive "corner" Nothing :| [])) :| [FieldDefinition Nothing "dsp" Nothing (TNamed "String" False) Nothing])))) :| [DNTypeSystem (TSDNType (TDNObject (Just "horse props") "Props" (Just ("Animal" :| ["Asset"])) (Just (Directive "defs" Nothing :| [])) (Just (FieldDefinition (Just "regular octane") "SPf" (Just (IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (Just (Directive "over" Nothing :| [])) :| [IVDN Nothing "dsp" (TNamed "String" False) Nothing Nothing])) (TNamed "Int" True) (Just (Directive "corner" Nothing :| [])) :| [FieldDefinition Nothing "dsp" Nothing (TNamed "String" False) Nothing])))),DNTypeSystem (TSDNType (TDNObject Nothing "Taco" Nothing Nothing (Just (FieldDefinition Nothing "filling" Nothing (TNamed "Filling" True) Nothing :| [FieldDefinition Nothing "shell" Nothing (TNamed "Material" False) Nothing])))),DNTypeSystem (TSDNType (TDNObject Nothing "WhatGoodIsThis" Nothing Nothing Nothing))]
--- DNTypeSystem (TSDNType (TDNObject (Just "horse props") "Props" (Just ("Animal" :| ["Asset"])) (Just (Directive "defs" Nothing :| [])) (Just (FieldDefinition (Just "regular octane") "SPf" (Just (IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (Just (Directive "over" Nothing :| [])) :| [                                                          ])) (TNamed "Int" True) (Just (Directive "corner" Nothing :| [])) :| [FieldDefinition Nothing "dsp" Nothing (TNamed "String" False) Nothing])))) :| [DNTypeSystem (TSDNType (TDNObject (Just "horse props") "Props" (Just ("Animal" :| ["Asset"])) (Just (Directive "defs" Nothing :| [])) (Just (FieldDefinition (Just "regular octane") "SPf" (Just (IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (Just (Directive "over" Nothing :| [])) :| [])) (TNamed "Int" True) (Just (Directive "corner" Nothing :| [])) :| [FieldDefinition Nothing "dsp" Nothing (TNamed "String" False) Nothing])))),DNTypeSystem (TSDNType (TDNObject Nothing "Taco" Nothing Nothing (Just (FieldDefinition Nothing "filling" Nothing (TNamed "Filling" True) Nothing :| [FieldDefinition Nothing "shell" Nothing (TNamed "Material" False) Nothing])))),DNTypeSystem (TSDNType (TDNObject Nothing "WhatGoodIsThis" Nothing Nothing Nothing))]
 
 

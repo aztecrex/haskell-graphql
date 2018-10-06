@@ -79,13 +79,13 @@ implementsInterfaces :: Parser (NonEmpty Text)
 implementsInterfaces = token "implements" *> optional (token "&") *> ((:|) <$> token name <*> many (token name))
 
 interfaceTypeDef :: Parser TypeDefinitionNode
-interfaceTypeDef = TDN <$ (
+interfaceTypeDef = TDNInterface <$>
         (optional description)
-    <*  token "interface"
-    <*  token name
-    <*  optional (token directives)
-    <*  optional fieldsDefinition
-    )
+    <*> (token "interface"
+    *>  token name)
+    <*> optional (token directives)
+    <*> optional fieldsDefinition
+
 
 fieldsDefinition :: Parser (NonEmpty FieldDefinitionNode)
 fieldsDefinition = token "{" *> ((:|) <$> token fieldDefinition <*> many (token fieldDefinition)) <* token "}"
