@@ -49,7 +49,8 @@ inputValueDefinition = IVDN' <$>
 
 directiveLocation :: Parser DirectiveLocation
 directiveLocation =
-    token "QUERY" *> pure DL_QUERY
+        token "QUERY" *> pure DL_QUERY
+    <|> token "MUTATION" *> pure DL_MUTATION
 
 rootOperationTypes :: Parser RootOperationTypeDefinitionsNode
 rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (token rootOperationType))

@@ -8,7 +8,7 @@ import Data.Attoparsec.Text (parseOnly, Parser)
 import Data.Either (isLeft)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
-import Data.Text (Text)
+import Data.Text (Text, unpack)
 import Language.GraphQL.Parse
 import Language.GraphQL.Syntax
 import Language.GraphQL.TH (graphql)
@@ -171,7 +171,13 @@ tests = testGroup "Parse" [
                             DL_QUERY))]
         ],
 
-        -- IVDN' (Maybe Text) Text Type  (Maybe Value) (Maybe Directives)
+
+        testGroup "Directive Locations" [
+            testDirectiveLocation "QUERY" DL_QUERY,
+            testDirectiveLocation "MUTATION" DL_MUTATION
+
+        ],
+
         testGroup "Values" [
             testValue "int" "7" (VInt 7),
             testValue "int from" "7.000" (VInt 7),
@@ -192,6 +198,11 @@ tests = testGroup "Parse" [
             testValue "variable" "$input" (VVariable "input")
             ]
     ]
+
+testDirectiveLocation :: Text -> DirectiveLocation -> TestTree
+testDirectiveLocation s v = testCase (unpack s) $ parseOnly document (
+        "directive @a on " <> s
+        ) @?= Right (nempt [DNTypeSystem (TSDNDirective (DDNDefinition "a" Nothing v))])
 
 testParseFail :: [Char] -> Text -> TestTree
 testParseFail name invalid = testCase name $
