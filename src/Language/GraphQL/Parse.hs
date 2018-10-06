@@ -30,6 +30,7 @@ typeSystemDefinition :: Parser TypeSystemDefinitionNode
 typeSystemDefinition =
         TSDNRoots <$> (token "schema" *> token rootOperationTypes)
     <|> TSDNDirective <$> directiveDefinition
+    <|> TSDNType <$> typeDefinition
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode
@@ -38,8 +39,92 @@ directiveDefinition = DDNDefinition <$> (token "directive" *> token "@" *> token
 argumentsDefinition :: Parser ArgumentsDefinition
 argumentsDefinition = token "(" *> ((:|) <$> token inputValueDefinition <*> many inputValueDefinition) <* token ")"
 
+typeDefinition :: Parser TypeDefinitionNode
+typeDefinition =
+        scalarTypeDef
+    <|> enumTypeDef
+    <|> objectTypeDef
+    <|> interfaceTypeDef
+    <|> unionTypeDef
+    <|> inputTypeDef
+
+scalarTypeDef :: Parser TypeDefinitionNode
+scalarTypeDef = TDNScalar <$> optional description <*> (token "scalar" *> token name) <*> optional (token directives)
+
+enumTypeDef :: Parser TypeDefinitionNode
+enumTypeDef = TDNEnum <$>
+        optional description
+    <*> (token "enum"
+    *>  token name)
+    <*> optional (token directives)
+    <*> optional (token "{" *> ((:|) <$> enumValueDef <*> many enumValueDef) <* token "}")
+
+enumValueDef :: Parser EnumValueDefNode
+enumValueDef = EnumValueDef <$>
+        optional description
+    <*> token (nameBut ["null", "true", "false"])
+    <*> optional (token directives)
+
+objectTypeDef :: Parser TypeDefinitionNode
+objectTypeDef = TDNObject <$>
+        (optional description)
+    <*> (token "type"
+    *> token name)
+    <*> optional implementsInterfaces
+    <*> optional (token directives)
+    <*> optional fieldsDefinition
+
+
+implementsInterfaces :: Parser (NonEmpty Text)
+implementsInterfaces = token "implements" *> optional (token "&") *> ((:|) <$> token name <*> many (token name))
+
+interfaceTypeDef :: Parser TypeDefinitionNode
+interfaceTypeDef = TDNInterface <$>
+        (optional description)
+    <*> (token "interface"
+    *>  token name)
+    <*> optional (token directives)
+    <*> optional fieldsDefinition
+
+
+fieldsDefinition :: Parser (NonEmpty FieldDefinitionNode)
+fieldsDefinition = token "{" *> ((:|) <$> token fieldDefinition <*> many (token fieldDefinition)) <* token "}"
+
+fieldDefinition :: Parser FieldDefinitionNode
+fieldDefinition = FieldDefinition <$>
+        optional description
+    <*> token name
+    <*> optional argumentsDefinition
+    <*> (token ":" *> token type_)
+    <*> optional directives
+
+unionTypeDef :: Parser TypeDefinitionNode
+unionTypeDef = TDNUnion <$>
+        (optional description)
+    <*> (token "union"
+    *>  token name)
+    <*>  optional (token directives)
+    <*>  optional unionMembers
+
+
+unionMembers :: Parser (NonEmpty Text)
+unionMembers = optional (token "|") *> ((:|) <$> token name <*> many (token "|" *> token name))
+
+
+inputTypeDef :: Parser TypeDefinitionNode
+inputTypeDef = TDNInput <$>
+        (optional description)
+    <*> (token "input"
+    *>  token name)
+    <*> optional (token directives)
+    <*> optional inputFieldsDefinition
+
+
+inputFieldsDefinition :: Parser (NonEmpty InputValueDefinitionNode)
+inputFieldsDefinition = token "{" *> ((:|) <$> inputValueDefinition <*> many inputValueDefinition) <* token "}"
+
 inputValueDefinition :: Parser InputValueDefinitionNode
-inputValueDefinition = IVDN' <$>
+inputValueDefinition = IVDN <$>
             optional (token (normalString <|> blockString))
         <*> token name
         <* token ":"
@@ -181,6 +266,9 @@ fragmentName = nameBut ["on"]
 token :: Parser a -> Parser a
 token t = t <* ignored
 
+
+description :: Parser Text
+description = token (blockString <|> normalString)
 
 blockString :: Parser Text
 blockString = "\"\"\"" *> ((fixup . T.concat)<$> many stok) <* "\"\"\""

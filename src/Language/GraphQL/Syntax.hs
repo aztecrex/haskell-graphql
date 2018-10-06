@@ -79,6 +79,23 @@ data Directive =
 data TypeSystemDefinitionNode =
         TSDNRoots RootOperationTypeDefinitionsNode
     |   TSDNDirective DirectiveDefinitionNode
+    |   TSDNType TypeDefinitionNode
+    deriving (Show, Eq, Generic, Data)
+
+data TypeDefinitionNode =
+        TDNScalar (Maybe Text) Text (Maybe Directives)
+    |   TDNEnum (Maybe Text) Text (Maybe Directives) (Maybe (NonEmpty EnumValueDefNode))
+    |   TDNObject (Maybe Text) Text (Maybe (NonEmpty Text)) (Maybe Directives) (Maybe (NonEmpty FieldDefinitionNode))
+    |   TDNInterface (Maybe Text) Text (Maybe Directives) (Maybe (NonEmpty FieldDefinitionNode))
+    |   TDNUnion (Maybe Text) Text (Maybe Directives) (Maybe (NonEmpty Text))
+    |   TDNInput (Maybe Text) Text (Maybe Directives) (Maybe (NonEmpty InputValueDefinitionNode))
+    |   TDN
+    deriving (Show, Eq, Generic, Data)
+
+data FieldDefinitionNode = FieldDefinition (Maybe Text) Text (Maybe ArgumentsDefinition) Type (Maybe Directives)
+    deriving (Show, Eq, Generic, Data)
+
+data EnumValueDefNode = EnumValueDef (Maybe Text) Text (Maybe Directives)
     deriving (Show, Eq, Generic, Data)
 
 type RootOperationTypeDefinitionsNode = NonEmpty RootOperationTypeDefinitionNode
@@ -94,8 +111,7 @@ data DirectiveDefinitionNode =
 type ArgumentsDefinition = NonEmpty InputValueDefinitionNode
 
 data InputValueDefinitionNode =
-        IVDN' (Maybe Text) Text Type  (Maybe Value) (Maybe Directives)
-    |   IVDN -- temp, delete
+        IVDN (Maybe Text) Text Type  (Maybe Value) (Maybe Directives)
     deriving (Show, Eq, Generic, Data)
 
 

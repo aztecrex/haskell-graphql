@@ -166,10 +166,260 @@ tests = testGroup "Parse" [
                         on QUERY|] $
                     nempt [DNTypeSystem (TSDNDirective (DDNDefinition "big"
                                 (mnempt [
-                                IVDN' (Just "name of the thing") "name" (TNamed "String" False) (Just (VInt 19)) (mnempt [Directive "defs" Nothing]),
-                                IVDN' Nothing "id" (TNamed "Int" True) Nothing Nothing])
+                                IVDN (Just "name of the thing") "name" (TNamed "String" False) (Just (VInt 19)) (mnempt [Directive "defs" Nothing]),
+                                IVDN Nothing "id" (TNamed "Int" True) Nothing Nothing])
                             DL_QUERY))]
         ],
+
+        testParse "scalar type definition" [graphql|
+                    "name of horse" scalar name @defs
+                    scalar Taco|] $
+                    nempt [
+                        DNTypeSystem (TSDNType (TDNScalar (Just "name of horse") "name"
+                                (mnempt [Directive "defs" Nothing]))),
+                        DNTypeSystem (TSDNType (TDNScalar Nothing "Taco" Nothing))
+                        ],
+
+        testParse "enum type definition" [graphql|
+                    "kind of horse" enum Kind @defs {
+                            "color is brown" BROWN @valuable
+                            SPOTTED
+                        }
+                        enum Filling {ALPASTOR CHORIZO CABEZA}
+                        enum Huh|] $
+                    nempt [
+                        DNTypeSystem ( TSDNType ( TDNEnum
+                            (Just "kind of horse")
+                            "Kind"
+                            (mnempt [Directive "defs" Nothing])
+                            (mnempt [
+                                EnumValueDef (Just "color is brown") "BROWN" (mnempt [
+                                    Directive "valuable" Nothing
+                                ]),
+                                EnumValueDef Nothing "SPOTTED" Nothing
+                            ])
+                        )),
+                        DNTypeSystem ( TSDNType ( TDNEnum
+                            Nothing
+                            "Filling"
+                            Nothing
+                            (mnempt [
+                                EnumValueDef Nothing "ALPASTOR" Nothing,
+                                EnumValueDef Nothing "CHORIZO" Nothing,
+                                EnumValueDef Nothing "CABEZA" Nothing
+                            ])
+                        )),
+                        DNTypeSystem ( TSDNType ( TDNEnum
+                            Nothing
+                            "Huh"
+                            Nothing
+                            Nothing
+                        ))
+                        ],
+
+        testParse "object type definition" [graphql|
+                    "horse props" type Props implements & Animal Asset @defs {
+                        "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
+                        dsp : String
+                        }
+                    "horse props" type Props implements Animal Asset @defs {
+                        "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
+                        dsp : String
+                    }
+                    type Taco {filling : Filling! shell : Material}
+                    type WhatGoodIsThis
+                    |] $
+                    nempt [
+                        DNTypeSystem (TSDNType (TDNObject
+                            (Just "horse props")
+                            "Props"
+                            (mnempt ["Animal", "Asset"])
+                            (mnempt [Directive "defs" Nothing])
+                            (mnempt [
+                                FieldDefinition
+                                    (Just "regular octane")
+                                    "SPf"
+                                    (mnempt [
+                                        IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (mnempt [Directive "over" Nothing])
+                                    ])
+                                    (TNamed "Int" True)
+                                    (mnempt [Directive "corner" Nothing]),
+                                FieldDefinition
+                                    Nothing
+                                    "dsp"
+                                    Nothing
+                                    (TNamed "String" False)
+                                    Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNObject
+                            (Just "horse props")
+                            "Props"
+                            (mnempt ["Animal", "Asset"])
+                            (mnempt [Directive "defs" Nothing])
+                            (mnempt [
+                                FieldDefinition
+                                    (Just "regular octane")
+                                    "SPf"
+                                    (mnempt [
+                                        IVDN (Just "fuel factor") "f" (TNamed "String" False) (Just (VEnum "PEARL")) (mnempt [Directive "over" Nothing])
+                                    ])
+                                    (TNamed "Int" True)
+                                    (mnempt [Directive "corner" Nothing]),
+                                FieldDefinition
+                                    Nothing
+                                    "dsp"
+                                    Nothing
+                                    (TNamed "String" False)
+                                    Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNObject
+                            Nothing
+                            "Taco"
+                            Nothing
+                            Nothing
+                            (mnempt [
+                                FieldDefinition Nothing "filling" Nothing (TNamed "Filling" True) Nothing,
+                                FieldDefinition Nothing "shell" Nothing (TNamed "Material" False) Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNObject
+                            Nothing "WhatGoodIsThis" Nothing Nothing Nothing
+                        ))
+                        ],
+
+        testParse "interface type definition" [graphql|
+                    "animal props" interface Animal @scorp {
+                            "withholdings before taxes" dollarinos ("scuba diver" nominal : String = never @under) : Int! @paced
+                            light : Bulb
+                        }
+                    interface Bulb {filament : Material power : Watts!}
+                    interface ReallyWhatGoodIsThis
+                    |] $
+                    nempt [
+                        DNTypeSystem (TSDNType (TDNInterface
+                            (Just "animal props")
+                            "Animal"
+                            (mnempt [Directive "scorp" Nothing])
+                            (mnempt [
+                                FieldDefinition
+                                    (Just "withholdings before taxes")
+                                    "dollarinos"
+                                    (mnempt [
+                                        IVDN (Just "scuba diver") "nominal" (TNamed "String" False) (Just (VEnum "never")) (mnempt [Directive "under" Nothing])
+                                    ])
+                                    (TNamed "Int" True)
+                                    (mnempt [Directive "paced" Nothing]),
+                                FieldDefinition
+                                    Nothing
+                                    "light"
+                                    Nothing
+                                    (TNamed "Bulb" False)
+                                    Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNInterface
+                            Nothing
+                            "Bulb"
+                            Nothing
+                            (mnempt [
+                                FieldDefinition
+                                    Nothing
+                                    "filament"
+                                    Nothing
+                                    (TNamed "Material" False)
+                                    Nothing,
+                                FieldDefinition
+                                    Nothing
+                                    "power"
+                                    Nothing
+                                    (TNamed "Watts" True)
+                                    Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNInterface
+                            Nothing
+                            "ReallyWhatGoodIsThis"
+                            Nothing
+                            Nothing
+                        ))
+                        ],
+
+        testParse "union type definition" [graphql|
+                    "whatever we want to return" union Thing @scorp   Animal | Taco | Airplane
+                    "whatever we want to return" union Thing @scorp | Animal | Taco | Airplane
+                    union Care   Hospital | Delivery
+                    union Care | Hospital | Delivery
+                    union StillMakesNoSense
+                    |] $
+                    nempt [
+                        DNTypeSystem (TSDNType (TDNUnion
+                            (Just "whatever we want to return")
+                            "Thing"
+                            (mnempt [Directive "scorp" Nothing])
+                            (mnempt ["Animal", "Taco", "Airplane"])
+                        )),
+                        DNTypeSystem (TSDNType (TDNUnion
+                            (Just "whatever we want to return")
+                            "Thing"
+                            (mnempt [Directive "scorp" Nothing])
+                            (mnempt ["Animal", "Taco", "Airplane"])
+                        )),
+                        DNTypeSystem (TSDNType (TDNUnion
+                            Nothing
+                            "Care"
+                            Nothing
+                            (mnempt ["Hospital", "Delivery"])
+                        )),
+                        DNTypeSystem (TSDNType (TDNUnion
+                            Nothing
+                            "Care"
+                            Nothing
+                            (mnempt ["Hospital", "Delivery"])
+                        )),
+                        DNTypeSystem (TSDNType (TDNUnion
+                            Nothing
+                            "StillMakesNoSense"
+                            Nothing
+                            Nothing
+                        ))
+                        ],
+
+        testParse "input object type definition" [graphql|
+                    "household items" input Parms @defs {
+                            "a ladder 6 feet" normalized : Structure! = true @corner
+                            never : String
+                        }
+                    input Recipe { feeds : Int! }
+                    input YetAnotherEmptyDefinition
+                    |] $
+                    nempt [
+                        DNTypeSystem (TSDNType (TDNInput
+                            (Just "household items")
+                            "Parms"
+                            (mnempt [Directive "defs" Nothing])
+                            (mnempt [
+                                IVDN (Just "a ladder 6 feet") "normalized" (TNamed "Structure" True) (Just (VBool True)) (mnempt [Directive "corner" Nothing]),
+                                IVDN Nothing "never" (TNamed "String" False) Nothing Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNInput
+                            Nothing
+                            "Recipe"
+                            Nothing
+                            (mnempt [
+                                IVDN Nothing "feeds" (TNamed "Int" True) Nothing Nothing
+                            ])
+                        )),
+                        DNTypeSystem (TSDNType (TDNInput
+                            Nothing
+                            "YetAnotherEmptyDefinition"
+                            Nothing
+                            Nothing
+                        ))
+                        ],
+
 
 
         testGroup "Directive Locations" [
