@@ -185,10 +185,36 @@ tests = testGroup "Parse" [
                             "color is brown" BROWN @valuable
                             SPOTTED
                         }
-                        enum Filling {ALPASTOR CHORIZO CABEZA}|] $
+                        enum Filling {ALPASTOR CHORIZO CABEZA}
+                        enum Huh|] $
                     nempt [
-                        DNTypeSystem (TSDNType TDN),
-                        DNTypeSystem (TSDNType TDN)
+                        DNTypeSystem ( TSDNType ( TDNEnum
+                            (Just "kind of horse")
+                            "Kind"
+                            (mnempt [Directive "defs" Nothing])
+                            (mnempt [
+                                EnumValueDef (Just "color is brown") "BROWN" (mnempt [
+                                    Directive "valuable" Nothing
+                                ]),
+                                EnumValueDef Nothing "SPOTTED" Nothing
+                            ])
+                        )),
+                        DNTypeSystem ( TSDNType ( TDNEnum
+                            Nothing
+                            "Filling"
+                            Nothing
+                            (mnempt [
+                                EnumValueDef Nothing "ALPASTOR" Nothing,
+                                EnumValueDef Nothing "CHORIZO" Nothing,
+                                EnumValueDef Nothing "CABEZA" Nothing
+                            ])
+                        )),
+                        DNTypeSystem ( TSDNType ( TDNEnum
+                            Nothing
+                            "Huh"
+                            Nothing
+                            Nothing
+                        ))
                         ],
 
         testParse "object type definition" [graphql|
@@ -336,4 +362,3 @@ nempt (a : as) = a :| as
 mnempt :: [a] -> Maybe (NonEmpty a)
 mnempt [] = Nothing
 mnempt as = Just (nempt as)
-

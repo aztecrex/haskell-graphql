@@ -52,16 +52,18 @@ scalarTypeDef :: Parser TypeDefinitionNode
 scalarTypeDef = TDNScalar <$> optional description <*> (token "scalar" *> token name) <*> optional (token directives)
 
 enumTypeDef :: Parser TypeDefinitionNode
-enumTypeDef = TDN <$ (
-        (optional description)
-    <* token "enum"
-    <* token name
-    <* optional (token directives)
-    <* token "{" <* ((:|) <$> enumValueDef <*> many enumValueDef) <* token "}"
-    )
+enumTypeDef = TDNEnum <$>
+        optional description
+    <*> (token "enum"
+    *>  token name)
+    <*> optional (token directives)
+    <*> optional (token "{" *> ((:|) <$> enumValueDef <*> many enumValueDef) <* token "}")
 
-enumValueDef :: Parser ()
-enumValueDef = optional description *> token (nameBut ["null", "true", "false"]) *> optional (token directives) *> pure ()
+enumValueDef :: Parser EnumValueDefNode
+enumValueDef = EnumValueDef <$>
+        optional description
+    <*> token (nameBut ["null", "true", "false"])
+    <*> optional (token directives)
 
 objectTypeDef :: Parser TypeDefinitionNode
 objectTypeDef = TDN <$ (
