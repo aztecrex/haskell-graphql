@@ -218,11 +218,11 @@ tests = testGroup "Parse" [
                         ],
 
         testParse "object type definition" [graphql|
-                    "horse props" type Props implements & Animal Asset @defs {
+                    "horse props" type Props implements & Animal & Asset @defs {
                         "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
                         dsp : String
                         }
-                    "horse props" type Props implements Animal Asset @defs {
+                    "horse props" type Props implements Animal & Asset @defs {
                         "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
                         dsp : String
                     }
@@ -420,6 +420,233 @@ tests = testGroup "Parse" [
                         ))
                         ],
 
+        testParse "schema extension" [graphql|
+                extend schema @dir1 @dir2 { mutation: Mu query: Qu subscription: Su}
+                extend schema { query: Q subscription: S }
+                extend schema @abc @def
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENSchema (SchemaExtendRoots
+                        (mnempt [Directive "dir1" Nothing, Directive "dir2" Nothing])
+                        (nempt [
+                            ROTDNDefinition MUTATION "Mu",
+                            ROTDNDefinition QUERY "Qu",
+                            ROTDNDefinition SUBSCRIPTION "Su"
+                            ])
+                    )),
+                    DNTypeSystemExtension (TSENSchema (SchemaExtendRoots
+                        Nothing
+                        (nempt [
+                            ROTDNDefinition QUERY "Q",
+                            ROTDNDefinition SUBSCRIPTION "S"
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENSchema (SchemaExtendDirectives
+                        (nempt [Directive "abc" Nothing, Directive "def" Nothing])
+                    ))
+                ],
+
+        testParse "scalar extension" [graphql|extend scalar Store @dirA @dirC|] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENScalar
+                        "Store"
+                        (nempt [Directive "dirA" Nothing, Directive "dirC" Nothing])
+                    ))
+                ],
+
+        testParse "object extension" [graphql|
+                extend type Obj implements & Truck & Airplane @spin @jump {egg : String}
+                extend type Obj implements Truck & Airplane @spin @jump {egg : String}
+                extend type Obj @spin @jump {egg : String}
+                extend type Obj implements Truck & Airplane {egg : String}
+                extend type Obj {egg: String}
+                extend type Obj implements & Truck & Airplane @spin @jump
+                extend type Obj implements Truck & Airplane @spin @jump
+                extend type Obj @spin @jump
+                extend type Obj implements & Truck & Airplane
+                extend type Obj implements Truck & Airplane
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENObjectF
+                        "Obj"
+                        (mnempt ["Truck", "Airplane"])
+                        (mnempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectF
+                        "Obj"
+                        (mnempt ["Truck", "Airplane"])
+                        (mnempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectF
+                        "Obj"
+                        Nothing
+                        (mnempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectF
+                        "Obj"
+                        (mnempt ["Truck", "Airplane"])
+                        Nothing
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectF
+                        "Obj"
+                        Nothing
+                        Nothing
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectD
+                        "Obj"
+                        (mnempt ["Truck", "Airplane"])
+                        (nempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectD
+                        "Obj"
+                        (mnempt ["Truck", "Airplane"])
+                        (nempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectD
+                        "Obj"
+                        Nothing
+                        (nempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectI
+                        "Obj"
+                        (nempt ["Truck", "Airplane"])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectI
+                        "Obj"
+                        (nempt ["Truck", "Airplane"])
+                    ))
+                ],
+
+        testParse "interface extension" [graphql|
+                extend interface Ifc @spin @jump {egg : String}
+                extend interface Ifc {egg: String}
+                extend interface Ifc @spin @jump
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENInterfaceF
+                        "Ifc"
+                        (mnempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENInterfaceF
+                        "Ifc"
+                        Nothing
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENInterfaceD
+                        "Ifc"
+                        (nempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                    ))
+                ],
+
+        testParse "union extension" [graphql|
+                extend union UUU @spin @egg | One | Two
+                extend union UUU @spin @egg   One | Two
+                extend union UUU | One | Two
+                extend union UUU   One | Two
+                extend union UUU @spin @egg
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENUnionM
+                        "UUU"
+                        (mnempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                        (nempt ["One", "Two"])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENUnionM
+                        "UUU"
+                        (mnempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                        (nempt ["One", "Two"])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENUnionM
+                        "UUU"
+                        Nothing
+                        (nempt ["One", "Two"])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENUnionM
+                        "UUU"
+                        Nothing
+                        (nempt ["One", "Two"])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENUnionD
+                        "UUU"
+                        (nempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                    ))
+                ],
+
+        testParse "enum extension" [graphql|
+                extend enum En @spin @egg {One Two}
+                extend enum En {One Two}
+                extend enum En @spin @egg
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENEnumV
+                        "En"
+                        (mnempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                        (nempt [
+                            EnumValueDef Nothing "One" Nothing,
+                            EnumValueDef Nothing "Two" Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENEnumV
+                        "En"
+                        Nothing
+                        (nempt [
+                            EnumValueDef Nothing "One" Nothing,
+                            EnumValueDef Nothing "Two" Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENEnumD
+                        "En"
+                        (nempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                    ))
+                ],
+
+        testParse "input extension" [graphql|
+                extend input In @spin @egg {One : Int Two : String!}
+                extend input In {One : Int Two : String!}
+                extend input In @spin @egg
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENInputF
+                        "In"
+                        (mnempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                        (nempt [
+                            IVDN Nothing "One" (TNamed "Int" False) Nothing Nothing,
+                            IVDN Nothing "Two" (TNamed "String" True) Nothing Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENInputF
+                        "In"
+                        Nothing
+                        (nempt [
+                            IVDN Nothing "One" (TNamed "Int" False) Nothing Nothing,
+                            IVDN Nothing "Two" (TNamed "String" True) Nothing Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENInputD
+                        "In"
+                        (nempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                    ))
+                ],
 
 
         testGroup "Directive Locations" [

@@ -4,14 +4,18 @@
 
 ## Status
 
-Notable capabilities
-- The parser can handle executable definitions
-- The parser can handle type definitions
+Notable capabilities:
 
-Current work is parsing type system extensions.
+- The parser is complete
+    - The parser can handle executable definitions
+    - The parser can handle type definitions
+    - The parser can handle type system extensions
+        - schema
+        - type
+
+Current work is on execution
 
 See [TODO.txt](TODO.txt) for near-term task list.
-
 
 ## Design
 
@@ -47,6 +51,9 @@ the results easily.
 The unparse function(s) will be capable of converting an ST into a form that can be consumed by
 common tools such as [Graphiql](https://github.com/graphql/graphiql).
 
+### Introspection
+
+Introspection adds discovery features to the execution functions.
 
 ## Build
 

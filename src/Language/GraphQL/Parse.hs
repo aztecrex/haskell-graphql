@@ -20,6 +20,7 @@ definition :: Parser DefinitionNode
 definition =
         DNExecutable <$> token executableDefinition
     <|> DNTypeSystem <$> token typeSystemDefinition
+    <|> DNTypeSystemExtension <$> token typeSystemExtension
 
 executableDefinition :: Parser ExecutableDefinitionNode
 executableDefinition =
@@ -31,6 +32,72 @@ typeSystemDefinition =
         TSDNRoots <$> (token "schema" *> token rootOperationTypes)
     <|> TSDNDirective <$> directiveDefinition
     <|> TSDNType <$> typeDefinition
+
+typeSystemExtension :: Parser TypeSystemExtensionNode
+typeSystemExtension =
+        TSENSchema <$> schemaExtension
+    <|> TSENType <$> typeExtension
+
+schemaExtension :: Parser SchemaExtensionNode
+schemaExtension =
+        SchemaExtendRoots <$ (token "extend" *> token "schema") <*> optional directives <*> rootOperationTypes
+    <|> SchemaExtendDirectives <$> (token "extend" *> token "schema" *> directives)
+
+
+typeExtension :: Parser TypeExtensionNode
+typeExtension =
+        TENScalar <$ (token "extend" *> token "scalar") <*> token name <*> directives
+    <|> TENObjectF
+            <$ (token "extend" *> token "type")
+            <*> token name
+            <*> optional implementsInterfaces
+            <*> optional directives
+            <*> fieldsDefinition
+    <|> TENObjectD
+            <$ (token "extend" *> token "type")
+            <*> token name
+            <*> optional implementsInterfaces
+            <*> directives
+    <|> TENObjectI
+            <$ (token "extend" *> token "type")
+            <*> token name
+            <*> implementsInterfaces
+    <|> TENInterfaceF
+            <$ (token "extend" *> token "interface")
+            <*> token name
+            <*> optional directives
+            <*> fieldsDefinition
+    <|> TENInterfaceD
+            <$ (token "extend" *> token "interface")
+            <*> token name
+            <*> directives
+    <|> TENUnionM
+            <$ (token "extend" *> token "union")
+            <*> token name
+            <*> optional directives
+            <*> unionMembers
+    <|> TENUnionD
+            <$ (token "extend" *> token "union")
+            <*> token name
+            <*> directives
+    <|> TENEnumV
+            <$ (token "extend" *> token "enum")
+            <*> token name
+            <*> optional directives
+            <*> (token "{" *> ((:|) <$> enumValueDef <*> many enumValueDef) <* token "}")
+    <|> TENEnumD
+            <$ (token "extend" *> token "enum")
+            <*> token name
+            <*> directives
+    <|> TENInputF
+            <$ (token "extend" *> token "input")
+            <*> token name
+            <*> optional directives
+            <*> inputFieldsDefinition
+    <|> TENInputD
+            <$ (token "extend" *> token "input")
+            <*> token name
+            <*> directives
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode
@@ -76,7 +143,7 @@ objectTypeDef = TDNObject <$>
 
 
 implementsInterfaces :: Parser (NonEmpty Text)
-implementsInterfaces = token "implements" *> optional (token "&") *> ((:|) <$> token name <*> many (token name))
+implementsInterfaces = token "implements" *> optional (token "&") *> ((:|) <$> token name <*> many (token "&" *> token name))
 
 interfaceTypeDef :: Parser TypeDefinitionNode
 interfaceTypeDef = TDNInterface <$>
@@ -154,7 +221,7 @@ directiveLocation =
     <|> token "INPUT_FIELD_DEFINITION" *> pure DL_INPUT_FIELD_DEFINITION
 
 rootOperationTypes :: Parser RootOperationTypeDefinitionsNode
-rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (token rootOperationType))
+rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (token rootOperationType)) <* token "}"
 
 rootOperationType :: Parser RootOperationTypeDefinitionNode
 rootOperationType = ROTDNDefinition <$> token operationType <*> (token ":" *> token name )
@@ -325,6 +392,4 @@ ignored =
         if (isSpace c || c == ',')
             then anyChar *> ignored
             else when (c == '#') $ manyTill anyChar (endOfLine <|> endOfInput) *> ignored
-
-
 
