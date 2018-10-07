@@ -151,6 +151,8 @@ data TypeExtensionNode =
     |   TENUnionD Text Directives
     |   TENEnumV Text (Maybe Directives) (NonEmpty EnumValueDefNode)
     |   TENEnumD Text Directives
+    |   TENInputF Text (Maybe Directives) (NonEmpty InputValueDefinitionNode)
+    |   TENInputD Text Directives
     deriving (Show, Eq, Generic, Data)
 
 

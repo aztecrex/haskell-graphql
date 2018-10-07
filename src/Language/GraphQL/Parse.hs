@@ -89,6 +89,15 @@ typeExtension =
             <$ (token "extend" *> token "enum")
             <*> token name
             <*> directives
+    <|> TENInputF
+            <$ (token "extend" *> token "input")
+            <*> token name
+            <*> optional directives
+            <*> inputFieldsDefinition
+    <|> TENInputD
+            <$ (token "extend" *> token "input")
+            <*> token name
+            <*> directives
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode

@@ -620,6 +620,33 @@ tests = testGroup "Parse" [
                     ))
                 ],
 
+        testParse "input extension" [graphql|
+                extend input In @spin @egg {One : Int Two : String!}
+                extend input In {One : Int Two : String!}
+                extend input In @spin @egg
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENInputF
+                        "In"
+                        (mnempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                        (nempt [
+                            IVDN Nothing "One" (TNamed "Int" False) Nothing Nothing,
+                            IVDN Nothing "Two" (TNamed "String" True) Nothing Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENInputF
+                        "In"
+                        Nothing
+                        (nempt [
+                            IVDN Nothing "One" (TNamed "Int" False) Nothing Nothing,
+                            IVDN Nothing "Two" (TNamed "String" True) Nothing Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENInputD
+                        "In"
+                        (nempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                    ))
+                ],
 
 
         testGroup "Directive Locations" [
