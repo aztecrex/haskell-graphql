@@ -1,5 +1,5 @@
 {-# LANGUAGE QuasiQuotes  #-}
-module Spec.GraphQL.Parse (tests) where
+module Spec.Language.GraphQL.Parse (tests) where
 ---
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
