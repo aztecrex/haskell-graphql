@@ -592,6 +592,36 @@ tests = testGroup "Parse" [
                     ))
                 ],
 
+        testParse "enum extension" [graphql|
+                extend enum En @spin @egg {One Two}
+                extend enum En {One Two}
+                extend enum En @spin @egg
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENEnumV
+                        "En"
+                        (mnempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                        (nempt [
+                            EnumValueDef Nothing "One" Nothing,
+                            EnumValueDef Nothing "Two" Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENEnumV
+                        "En"
+                        Nothing
+                        (nempt [
+                            EnumValueDef Nothing "One" Nothing,
+                            EnumValueDef Nothing "Two" Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENEnumD
+                        "En"
+                        (nempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                    ))
+                ],
+
+
+
         testGroup "Directive Locations" [
             testDirectiveLocation "QUERY" DL_QUERY,
             testDirectiveLocation "MUTATION" DL_MUTATION,

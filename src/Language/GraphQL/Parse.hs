@@ -80,6 +80,15 @@ typeExtension =
             <$ (token "extend" *> token "union")
             <*> token name
             <*> directives
+    <|> TENEnumV
+            <$ (token "extend" *> token "enum")
+            <*> token name
+            <*> optional directives
+            <*> (token "{" *> ((:|) <$> enumValueDef <*> many enumValueDef) <* token "}")
+    <|> TENEnumD
+            <$ (token "extend" *> token "enum")
+            <*> token name
+            <*> directives
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode
