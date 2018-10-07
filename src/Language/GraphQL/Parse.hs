@@ -45,8 +45,23 @@ schemaExtension =
 
 
 typeExtension :: Parser TypeExtensionNode
-typeExtension = TENScalar <$ (token "extend" *> token "scalar") <*> token name <*> directives
-
+typeExtension =
+        TENScalar <$ (token "extend" *> token "scalar") <*> token name <*> directives
+    <|> TENObjectF
+            <$ (token "extend" *> token "type")
+            <*> token name
+            <*> optional implementsInterfaces
+            <*> optional directives
+            <*> fieldsDefinition
+    <|> TENObjectD
+            <$ (token "extend" *> token "type")
+            <*> token name
+            <*> optional implementsInterfaces
+            <*> directives
+    <|> TENObjectI
+            <$ (token "extend" *> token "type")
+            <*> token name
+            <*> implementsInterfaces
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode
@@ -92,7 +107,7 @@ objectTypeDef = TDNObject <$>
 
 
 implementsInterfaces :: Parser (NonEmpty Text)
-implementsInterfaces = token "implements" *> optional (token "&") *> ((:|) <$> token name <*> many (token name))
+implementsInterfaces = token "implements" *> optional (token "&") *> ((:|) <$> token name <*> many (token "&" *> token name))
 
 interfaceTypeDef :: Parser TypeDefinitionNode
 interfaceTypeDef = TDNInterface <$>

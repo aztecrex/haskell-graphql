@@ -89,7 +89,6 @@ data TypeDefinitionNode =
     |   TDNInterface (Maybe Text) Text (Maybe Directives) (Maybe (NonEmpty FieldDefinitionNode))
     |   TDNUnion (Maybe Text) Text (Maybe Directives) (Maybe (NonEmpty Text))
     |   TDNInput (Maybe Text) Text (Maybe Directives) (Maybe (NonEmpty InputValueDefinitionNode))
-    |   TDN
     deriving (Show, Eq, Generic, Data)
 
 data FieldDefinitionNode = FieldDefinition (Maybe Text) Text (Maybe ArgumentsDefinition) Type (Maybe Directives)
@@ -143,6 +142,9 @@ data TypeSystemExtensionNode =
 
 data TypeExtensionNode =
         TENScalar Text Directives
+    |   TENObjectF Text (Maybe (NonEmpty Text)) (Maybe Directives) (NonEmpty FieldDefinitionNode)
+    |   TENObjectD Text (Maybe (NonEmpty Text)) Directives
+    |   TENObjectI Text (NonEmpty Text)
     deriving (Show, Eq, Generic, Data)
 
 

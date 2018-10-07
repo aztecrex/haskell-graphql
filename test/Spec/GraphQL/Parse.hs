@@ -218,11 +218,11 @@ tests = testGroup "Parse" [
                         ],
 
         testParse "object type definition" [graphql|
-                    "horse props" type Props implements & Animal Asset @defs {
+                    "horse props" type Props implements & Animal & Asset @defs {
                         "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
                         dsp : String
                         }
-                    "horse props" type Props implements Animal Asset @defs {
+                    "horse props" type Props implements Animal & Asset @defs {
                         "regular octane" SPf ("fuel factor" f : String = PEARL @over) : Int! @corner
                         dsp : String
                     }
@@ -454,6 +454,86 @@ tests = testGroup "Parse" [
                     ))
                 ],
 
+        testParse "object extension" [graphql|
+                extend type Obj implements & Truck & Airplane @spin @jump {egg : String}
+                extend type Obj implements Truck & Airplane @spin @jump {egg : String}
+                extend type Obj @spin @jump {egg : String}
+                extend type Obj implements Truck & Airplane {egg : String}
+                extend type Obj {egg: String}
+                extend type Obj implements & Truck & Airplane @spin @jump
+                extend type Obj implements Truck & Airplane @spin @jump
+                extend type Obj @spin @jump
+                extend type Obj implements & Truck & Airplane
+                extend type Obj implements Truck & Airplane
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENObjectF
+                        "Obj"
+                        (mnempt ["Truck", "Airplane"])
+                        (mnempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectF
+                        "Obj"
+                        (mnempt ["Truck", "Airplane"])
+                        (mnempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectF
+                        "Obj"
+                        Nothing
+                        (mnempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectF
+                        "Obj"
+                        (mnempt ["Truck", "Airplane"])
+                        Nothing
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectF
+                        "Obj"
+                        Nothing
+                        Nothing
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectD
+                        "Obj"
+                        (mnempt ["Truck", "Airplane"])
+                        (nempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectD
+                        "Obj"
+                        (mnempt ["Truck", "Airplane"])
+                        (nempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectD
+                        "Obj"
+                        Nothing
+                        (nempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectI
+                        "Obj"
+                        (nempt ["Truck", "Airplane"])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENObjectI
+                        "Obj"
+                        (nempt ["Truck", "Airplane"])
+                    ))
+                ],
+
+
+
         testGroup "Directive Locations" [
             testDirectiveLocation "QUERY" DL_QUERY,
             testDirectiveLocation "MUTATION" DL_MUTATION,
@@ -535,6 +615,4 @@ nempt (a : as) = a :| as
 mnempt :: [a] -> Maybe (NonEmpty a)
 mnempt [] = Nothing
 mnempt as = Just (nempt as)
-
-
 
