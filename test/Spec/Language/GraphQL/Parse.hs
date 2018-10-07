@@ -4,7 +4,7 @@ module Spec.Language.GraphQL.Parse (tests) where
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
 
-import Data.Attoparsec.Text (parseOnly, Parser)
+import Data.Attoparsec.Text (parseOnly)
 import Data.Either (isLeft)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Monoid ((<>))
