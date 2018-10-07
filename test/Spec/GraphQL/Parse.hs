@@ -558,7 +558,39 @@ tests = testGroup "Parse" [
                     ))
                 ],
 
-
+        testParse "union extension" [graphql|
+                extend union UUU @spin @egg | One | Two
+                extend union UUU @spin @egg   One | Two
+                extend union UUU | One | Two
+                extend union UUU   One | Two
+                extend union UUU @spin @egg
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENUnionM
+                        "UUU"
+                        (mnempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                        (nempt ["One", "Two"])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENUnionM
+                        "UUU"
+                        (mnempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                        (nempt ["One", "Two"])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENUnionM
+                        "UUU"
+                        Nothing
+                        (nempt ["One", "Two"])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENUnionM
+                        "UUU"
+                        Nothing
+                        (nempt ["One", "Two"])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENUnionD
+                        "UUU"
+                        (nempt [Directive "spin" Nothing, Directive "egg" Nothing])
+                    ))
+                ],
 
         testGroup "Directive Locations" [
             testDirectiveLocation "QUERY" DL_QUERY,

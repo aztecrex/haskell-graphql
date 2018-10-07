@@ -147,6 +147,8 @@ data TypeExtensionNode =
     |   TENObjectI Text (NonEmpty Text)
     |   TENInterfaceF Text (Maybe Directives) (NonEmpty FieldDefinitionNode)
     |   TENInterfaceD Text Directives
+    |   TENUnionM Text (Maybe Directives) (NonEmpty Text)
+    |   TENUnionD Text Directives
     deriving (Show, Eq, Generic, Data)
 
 

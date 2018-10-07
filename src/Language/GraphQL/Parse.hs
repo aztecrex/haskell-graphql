@@ -71,6 +71,15 @@ typeExtension =
             <$ (token "extend" *> token "interface")
             <*> token name
             <*> directives
+    <|> TENUnionM
+            <$ (token "extend" *> token "union")
+            <*> token name
+            <*> optional directives
+            <*> unionMembers
+    <|> TENUnionD
+            <$ (token "extend" *> token "union")
+            <*> token name
+            <*> directives
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode
@@ -367,4 +376,5 @@ ignored =
             else when (c == '#') $ manyTill anyChar (endOfLine <|> endOfInput) *> ignored
 
 
-
+-- DNTypeSystemExtension (TSENType (TENUnionM "UUU" (Just (Directive "spin" Nothing :| [Directive "jump" Nothing])) ("One" :| ["Two"]))) :| [DNTypeSystemExtension (TSENType (TENUnionM "UUU" (Just (Directive "spin" Nothing :| [Directive "jump" Nothing])) ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionM "UUU" Nothing ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionM "UUU" Nothing ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionD "UUU" (Directive "spin" Nothing :| [Directive "jump" Nothing])))]
+-- DNTypeSystemExtension (TSENType (TENUnionM "UUU" (Just (Directive "spin" Nothing :| [Directive "egg" Nothing])) ("One" :| ["Two"]))) :| [DNTypeSystemExtension (TSENType (TENUnionM "UUU" (Just (Directive "spin" Nothing :| [Directive "egg" Nothing])) ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionM "UUU" Nothing ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionM "UUU" Nothing ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionD "UUU" (Directive "spin" Nothing :| [Directive "egg" Nothing])))]
