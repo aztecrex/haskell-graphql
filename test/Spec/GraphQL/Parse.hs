@@ -420,7 +420,31 @@ tests = testGroup "Parse" [
                         ))
                         ],
 
-
+        testParse "schema extension" [graphql|
+                extend schema @dir1 @dir2 { mutation: Mu query: Qu subscription: Su}
+                extend schema { query: Q subscription: S }
+                extend schema @abc @def
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENSchema (SchemaExtendRoots
+                        (mnempt [Directive "dir1" Nothing, Directive "dir2" Nothing])
+                        (nempt [
+                            ROTDNDefinition MUTATION "Mu",
+                            ROTDNDefinition QUERY "Qu",
+                            ROTDNDefinition SUBSCRIPTION "Su"
+                            ])
+                    )),
+                    DNTypeSystemExtension (TSENSchema (SchemaExtendRoots
+                        Nothing
+                        (nempt [
+                            ROTDNDefinition QUERY "Q",
+                            ROTDNDefinition SUBSCRIPTION "S"
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENSchema (SchemaExtendDirectives
+                        (nempt [Directive "abc" Nothing, Directive "def" Nothing])
+                    ))
+                ],
 
         testGroup "Directive Locations" [
             testDirectiveLocation "QUERY" DL_QUERY,
@@ -503,4 +527,6 @@ nempt (a : as) = a :| as
 mnempt :: [a] -> Maybe (NonEmpty a)
 mnempt [] = Nothing
 mnempt as = Just (nempt as)
+
+
 

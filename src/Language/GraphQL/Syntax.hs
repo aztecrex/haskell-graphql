@@ -136,5 +136,13 @@ data DirectiveLocation =
     |   DL_INPUT_FIELD_DEFINITION
     deriving (Show, Eq, Generic, Data)
 
-data TypeSystemExtensionNode = TSEN -- NYI
+data TypeSystemExtensionNode =
+        TSENSchema SchemaExtensionNode
+    |   TSENType
+    deriving (Show, Eq, Generic, Data)
+
+
+data SchemaExtensionNode =
+        SchemaExtendRoots (Maybe Directives) RootOperationTypeDefinitionsNode
+    |   SchemaExtendDirectives Directives
     deriving (Show, Eq, Generic, Data)

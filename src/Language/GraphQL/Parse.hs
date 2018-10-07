@@ -20,6 +20,7 @@ definition :: Parser DefinitionNode
 definition =
         DNExecutable <$> token executableDefinition
     <|> DNTypeSystem <$> token typeSystemDefinition
+    <|> DNTypeSystemExtension <$> token typeSystemExtension
 
 executableDefinition :: Parser ExecutableDefinitionNode
 executableDefinition =
@@ -31,6 +32,19 @@ typeSystemDefinition =
         TSDNRoots <$> (token "schema" *> token rootOperationTypes)
     <|> TSDNDirective <$> directiveDefinition
     <|> TSDNType <$> typeDefinition
+
+typeSystemExtension :: Parser TypeSystemExtensionNode
+typeSystemExtension =
+        TSENSchema <$> schemaExtension
+
+schemaExtension :: Parser SchemaExtensionNode
+schemaExtension =
+        SchemaExtendRoots <$ (token "extend" *> token "schema") <*> optional directives <*> rootOperationTypes
+    <|> SchemaExtendDirectives <$> (token "extend" *> token "schema" *> directives)
+
+
+typeExtension :: Parser TypeSystemExtensionNode
+typeExtension = undefined
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode
@@ -154,7 +168,7 @@ directiveLocation =
     <|> token "INPUT_FIELD_DEFINITION" *> pure DL_INPUT_FIELD_DEFINITION
 
 rootOperationTypes :: Parser RootOperationTypeDefinitionsNode
-rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (token rootOperationType))
+rootOperationTypes = token "{" *> ((:|) <$> token rootOperationType <*> many (token rootOperationType)) <* token "}"
 
 rootOperationType :: Parser RootOperationTypeDefinitionNode
 rootOperationType = ROTDNDefinition <$> token operationType <*> (token ":" *> token name )
