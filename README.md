@@ -46,14 +46,10 @@ definitions with them.
 The issue functions will allow a programmer to form and send GQL requests to a service and interpret
 the results easily.
 
-### Unparse
-
-The unparse function(s) will be capable of converting an ST into a form that can be consumed by
-common tools such as [Graphiql](https://github.com/graphql/graphiql).
-
 ### Introspection
 
-Introspection adds discovery features to the execution functions.
+Introspection adds discovery features to the execution functions. The libary will support commonly
+used tooling such as [Graphiql](https://github.com/graphql/graphiql).
 
 ## Build
 
