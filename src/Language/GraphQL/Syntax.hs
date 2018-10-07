@@ -12,7 +12,7 @@ type DocumentNode = NonEmpty DefinitionNode
 data DefinitionNode =
         DNExecutable ExecutableDefinitionNode
     |   DNTypeSystem TypeSystemDefinitionNode
-    |   DNTypeSystemExtension TypeSystemDefinitionExtensionNode
+    |   DNTypeSystemExtension TypeSystemExtensionNode
         deriving (Show, Eq, Generic, Data)
 
 data ExecutableDefinitionNode =
@@ -136,5 +136,5 @@ data DirectiveLocation =
     |   DL_INPUT_FIELD_DEFINITION
     deriving (Show, Eq, Generic, Data)
 
-data TypeSystemDefinitionExtensionNode = TSDEN -- NYI
+data TypeSystemExtensionNode = TSEN -- NYI
     deriving (Show, Eq, Generic, Data)
