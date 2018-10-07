@@ -36,6 +36,7 @@ typeSystemDefinition =
 typeSystemExtension :: Parser TypeSystemExtensionNode
 typeSystemExtension =
         TSENSchema <$> schemaExtension
+    <|> TSENType <$> typeExtension
 
 schemaExtension :: Parser SchemaExtensionNode
 schemaExtension =
@@ -43,8 +44,9 @@ schemaExtension =
     <|> SchemaExtendDirectives <$> (token "extend" *> token "schema" *> directives)
 
 
-typeExtension :: Parser TypeSystemExtensionNode
-typeExtension = undefined
+typeExtension :: Parser TypeExtensionNode
+typeExtension = TENScalar <$ (token "extend" *> token "scalar") <*> token name <*> directives
+
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode

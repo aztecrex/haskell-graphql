@@ -138,7 +138,11 @@ data DirectiveLocation =
 
 data TypeSystemExtensionNode =
         TSENSchema SchemaExtensionNode
-    |   TSENType
+    |   TSENType TypeExtensionNode
+    deriving (Show, Eq, Generic, Data)
+
+data TypeExtensionNode =
+        TENScalar Text Directives
     deriving (Show, Eq, Generic, Data)
 
 

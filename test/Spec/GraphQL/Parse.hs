@@ -446,6 +446,14 @@ tests = testGroup "Parse" [
                     ))
                 ],
 
+        testParse "scalar extension" [graphql|extend scalar Store @dirA @dirC|] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENScalar
+                        "Store"
+                        (nempt [Directive "dirA" Nothing, Directive "dirC" Nothing])
+                    ))
+                ],
+
         testGroup "Directive Locations" [
             testDirectiveLocation "QUERY" DL_QUERY,
             testDirectiveLocation "MUTATION" DL_MUTATION,
