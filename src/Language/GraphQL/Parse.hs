@@ -393,6 +393,3 @@ ignored =
             then anyChar *> ignored
             else when (c == '#') $ manyTill anyChar (endOfLine <|> endOfInput) *> ignored
 
-
--- DNTypeSystemExtension (TSENType (TENUnionM "UUU" (Just (Directive "spin" Nothing :| [Directive "jump" Nothing])) ("One" :| ["Two"]))) :| [DNTypeSystemExtension (TSENType (TENUnionM "UUU" (Just (Directive "spin" Nothing :| [Directive "jump" Nothing])) ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionM "UUU" Nothing ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionM "UUU" Nothing ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionD "UUU" (Directive "spin" Nothing :| [Directive "jump" Nothing])))]
--- DNTypeSystemExtension (TSENType (TENUnionM "UUU" (Just (Directive "spin" Nothing :| [Directive "egg" Nothing])) ("One" :| ["Two"]))) :| [DNTypeSystemExtension (TSENType (TENUnionM "UUU" (Just (Directive "spin" Nothing :| [Directive "egg" Nothing])) ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionM "UUU" Nothing ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionM "UUU" Nothing ("One" :| ["Two"]))),DNTypeSystemExtension (TSENType (TENUnionD "UUU" (Directive "spin" Nothing :| [Directive "egg" Nothing])))]
