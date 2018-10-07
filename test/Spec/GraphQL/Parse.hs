@@ -532,6 +532,32 @@ tests = testGroup "Parse" [
                     ))
                 ],
 
+        testParse "interface extension" [graphql|
+                extend interface Ifc @spin @jump {egg : String}
+                extend interface Ifc {egg: String}
+                extend interface Ifc @spin @jump
+                |] $
+                nempt [
+                    DNTypeSystemExtension (TSENType (TENInterfaceF
+                        "Ifc"
+                        (mnempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENInterfaceF
+                        "Ifc"
+                        Nothing
+                        (nempt [
+                            FieldDefinition Nothing "egg" Nothing (TNamed "String" False) Nothing
+                        ])
+                    )),
+                    DNTypeSystemExtension (TSENType (TENInterfaceD
+                        "Ifc"
+                        (nempt [Directive "spin" Nothing, Directive "jump" Nothing])
+                    ))
+                ],
+
 
 
         testGroup "Directive Locations" [

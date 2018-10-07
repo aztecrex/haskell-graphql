@@ -62,6 +62,15 @@ typeExtension =
             <$ (token "extend" *> token "type")
             <*> token name
             <*> implementsInterfaces
+    <|> TENInterfaceF
+            <$ (token "extend" *> token "interface")
+            <*> token name
+            <*> optional directives
+            <*> fieldsDefinition
+    <|> TENInterfaceD
+            <$ (token "extend" *> token "interface")
+            <*> token name
+            <*> directives
 
 
 directiveDefinition :: Parser DirectiveDefinitionNode
